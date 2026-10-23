@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 
 const geist = Geist({
   variable: "--font-geist-sans",
@@ -39,15 +37,63 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${geist.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-white font-sans text-slate-900">
-        <Navbar />
-
-        <main className="flex-1">{children}</main>
-
-        <Footer />
+        {children}
       </body>
     </html>
   );
 }
+
+
+// import type { Metadata } from "next";
+// import { Geist } from "next/font/google";
+
+// import "./globals.css";
+// import Navbar from "@/components/layout/Navbar";
+// import Footer from "@/components/layout/Footer";
+
+// const geist = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
+
+// export const metadata: Metadata = {
+//   metadataBase: new URL(
+//     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+//   ),
+//   title: {
+//     default: "BEREM | Génie civil et construction",
+//     template: "%s | BEREM",
+//   },
+//   description:
+//     "Découvrez les services, les réalisations et les projets de BEREM dans le domaine du génie civil et de la construction.",
+//   applicationName: "BEREM",
+//   openGraph: {
+//     type: "website",
+//     locale: "fr_FR",
+//     siteName: "BEREM",
+//     title: "BEREM | Génie civil et construction",
+//     description:
+//       "Des solutions adaptées à vos projets de génie civil et de construction.",
+//   },
+// };
+
+// export default function RootLayout({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) {
+//   return (
+//     <html lang="fr" className={`${geist.variable} h-full antialiased`}>
+//       <body className="flex min-h-full flex-col bg-white font-sans text-slate-900">
+//         <Navbar />
+
+//         <main className="flex-1">{children}</main>
+
+//         <Footer />
+//       </body>
+//     </html>
+//   );
+// }
 
 
 // import type { Metadata } from "next";

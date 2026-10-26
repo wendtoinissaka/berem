@@ -33,8 +33,28 @@ export async function getPublishedProjectBySlug(slug: string) {
         },
       },
       updates: {
-        orderBy: {
-          publishedAt: "desc",
+        where: {
+          isPublished: true,
+        },
+        orderBy: [
+          {
+            eventDate: "desc",
+          },
+          {
+            createdAt: "desc",
+          },
+        ],
+        include: {
+          stage: {
+            select: {
+              name: true,
+            },
+          },
+          media: {
+            orderBy: {
+              sortOrder: "asc",
+            },
+          },
         },
       },
     },
@@ -46,6 +66,7 @@ export async function getOngoingProjects() {
     where: {
       isPublished: true,
       status: "IN_PROGRESS",
+      archivedAt: null,
     },
     orderBy: {
       updatedAt: "desc",
@@ -57,11 +78,41 @@ export async function getOngoingProjects() {
         },
       },
       updates: {
-        orderBy: {
-          publishedAt: "desc",
+        where: {
+          isPublished: true,
         },
+        orderBy: [
+          {
+            eventDate: "desc",
+          },
+          {
+            createdAt: "desc",
+          },
+        ],
         take: 1,
+        include: {
+          media: {
+            orderBy: {
+              sortOrder: "asc",
+            },
+          },
+        },
       },
+    },
+  });
+}
+
+
+export async function getCompletedProjects() {
+  return prisma.project.findMany({
+    where: {
+      isPublished: true,
+      status: "COMPLETED",
+      archivedAt: null,
+    },
+    orderBy: { completedAt: "desc" },
+    include: {
+      media: { orderBy: { sortOrder: "asc" } },
     },
   });
 }

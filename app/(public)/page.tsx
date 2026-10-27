@@ -1,7 +1,11 @@
 export const instant = false;
+
 import Hero from "@/components/home/Hero";
 import ServicesSection from "@/components/home/ServicesSection";
+import SolutionsSection from "@/components/home/SolutionsSection";
 import ProjectsSection from "@/components/home/ProjectsSection";
+import ChantiersSection from "@/components/home/ChantiersSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
 import StatsSection from "@/components/home/StatsSection";
 import ContactSection from "@/components/home/ContactSection";
 
@@ -9,13 +13,25 @@ export default function Home() {
   return (
     <>
       <Hero />
+
       <ServicesSection />
+
       <ProjectsSection />
+
+      <ChantiersSection />
+
+      <TestimonialsSection />
+
+      <SolutionsSection />
+
       <StatsSection />
+
       <ContactSection />
     </>
   );
 }
+
+
 
 // import Image from "next/image";
 

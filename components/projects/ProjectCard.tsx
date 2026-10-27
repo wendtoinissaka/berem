@@ -74,11 +74,18 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {project.description}
           </p>
 
-          {project.status === "IN_PROGRESS" && (
+  
+          {(project.status === "IN_PROGRESS" ||
+            project.status === "COMPLETED") && (
             <div className="mt-5">
               <div className="mb-2 flex justify-between text-xs font-semibold text-slate-600">
                 <span>Avancement</span>
-                <span>{project.progress}%</span>
+                <span>
+                  {project.status === "COMPLETED"
+                    ? 100
+                    : Math.min(100, Math.max(0, project.progress))}
+                  %
+                </span>
               </div>
 
               <div
@@ -87,17 +94,26 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 aria-label={`Avancement du projet ${project.title}`}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-valuenow={Math.min(100, Math.max(0, project.progress))}
+                aria-valuenow={
+                  project.status === "COMPLETED"
+                    ? 100
+                    : Math.min(100, Math.max(0, project.progress))
+                }
               >
                 <div
                   className="h-full rounded-full bg-[#F59E0B]"
                   style={{
-                    width: `${Math.min(100, Math.max(0, project.progress))}%`,
+                    width: `${
+                      project.status === "COMPLETED"
+                        ? 100
+                        : Math.min(100, Math.max(0, project.progress))
+                    }%`,
                   }}
                 />
               </div>
             </div>
           )}
+
 
           <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-5">
             <span className="text-sm font-semibold text-[#102A43]">

@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import ProjectCard from "@/components/projects/ProjectCard";
-import { getPublishedProjects } from "@/lib/data/projects";
+import { getCompletedProjects } from "@/lib/data/projects";
 
 export default async function ProjectsSection() {
-  const projects = await getPublishedProjects();
+  const projects = await getCompletedProjects();
   const featuredProjects = projects.slice(0, 3);
 
   return (
@@ -21,8 +21,8 @@ export default async function ProjectsSection() {
             </h2>
 
             <p className="mt-5 max-w-xl leading-8 text-slate-600">
-              Découvrez les projets publiés par notre équipe et les
-              compétences mobilisées pour leur réalisation.
+              Découvrez nos projets achevés, les ouvrages réalisés et les
+              compétences mobilisées par nos équipes.
             </p>
           </div>
 
@@ -30,7 +30,8 @@ export default async function ProjectsSection() {
             href="/realisations"
             className="inline-flex items-center gap-3 self-start font-bold text-[#102A43] transition hover:text-amber-600 md:self-auto"
           >
-            Toutes les réalisations <span aria-hidden="true">→</span>
+            Toutes les réalisations
+            <span aria-hidden="true">→</span>
           </Link>
         </div>
 
@@ -47,12 +48,21 @@ export default async function ProjectsSection() {
             </h3>
 
             <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-600">
-              Les projets apparaîtront ici dès qu&apos;ils auront été ajoutés
-              et publiés par l&apos;équipe.
+              Nos réalisations apparaîtront ici dès que des projets terminés
+              auront été publiés par notre équipe.
             </p>
+
+            <Link
+              href="/realisations"
+              className="mt-6 inline-flex items-center gap-2 font-bold text-[#102A43] transition hover:text-amber-600"
+            >
+              Explorer les réalisations
+              <span aria-hidden="true">→</span>
+            </Link>
           </div>
         )}
       </div>
     </section>
   );
 }
+

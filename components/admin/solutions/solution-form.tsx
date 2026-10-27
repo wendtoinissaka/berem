@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import SolutionMediaUpload from "@/components/admin/solutions/solution-media-upload";
 import { createSolution, updateSolution } from "@/app/admin/solutions/actions";
+import SolutionBrandImageUpload from "@/components/admin/solutions/solution-brand-image-upload";
 
 type Feature = {
   title: string;
@@ -43,6 +44,14 @@ export default function SolutionForm({ initialData }: Props) {
       ? initialData.features
       : [{ title: "", description: "" }],
   );
+
+  const [logoUrl, setLogoUrl] = useState(
+  initialData?.logoUrl ?? ""
+);
+
+const [coverImageUrl, setCoverImageUrl] = useState(
+  initialData?.coverImageUrl ?? ""
+);
 
   function updateFeature(
     index: number,
@@ -88,9 +97,16 @@ export default function SolutionForm({ initialData }: Props) {
   }
 
   return (
-    <form action={handleSubmit} className="space-y-8">
-      <input type="hidden" name="id" value={solutionId} />
+<form action={handleSubmit} className="space-y-8">
+  <input type="hidden" name="id" value={solutionId} />
 
+  <input type="hidden" name="logoUrl" value={logoUrl} />
+
+  <input
+    type="hidden"
+    name="coverImageUrl"
+    value={coverImageUrl}
+  />
       <section className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
@@ -228,10 +244,59 @@ export default function SolutionForm({ initialData }: Props) {
         </button>
       </section>
 
-      <SolutionMediaUpload
-        initialSolutionId={solutionId || undefined}
-        onSolutionReady={setSolutionId}
-      />
+{/* Identité visuelle de la solution */}
+<section className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+  <div>
+    <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
+      Identité visuelle
+    </p>
+
+    <h2 className="mt-2 text-xl font-bold text-[#102A43]">
+      3. Logo et image de couverture
+    </h2>
+
+    <p className="mt-1 text-sm text-slate-500">
+      Ajoute le logo de la solution et une image qui la représente.
+      Les images sont envoyées vers Cloudinary.
+    </p>
+  </div>
+
+  <div className="grid gap-6 lg:grid-cols-2">
+    <SolutionBrandImageUpload
+      kind="logo"
+      solutionId={solutionId || undefined}
+      initialUrl={logoUrl}
+      onSolutionReady={setSolutionId}
+      onUrlChange={setLogoUrl}
+    />
+
+    <SolutionBrandImageUpload
+      kind="couverture"
+      solutionId={solutionId || undefined}
+      initialUrl={coverImageUrl}
+      onSolutionReady={setSolutionId}
+      onUrlChange={setCoverImageUrl}
+    />
+  </div>
+</section>
+
+{/* Galerie de la solution */}
+<section className="space-y-4">
+  <div>
+    <h2 className="text-xl font-bold text-[#102A43]">
+      4. Galerie de médias
+    </h2>
+
+    <p className="mt-1 text-sm text-slate-500">
+      Ajoute les captures d'écran, illustrations et vidéos de présentation.
+    </p>
+  </div>
+
+  <SolutionMediaUpload
+    initialSolutionId={solutionId || undefined}
+    onSolutionReady={setSolutionId}
+  />
+</section>
 
       <section className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div>

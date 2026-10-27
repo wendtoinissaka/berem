@@ -59,14 +59,19 @@ export async function ensureSolutionDraft(formData: FormData) {
  * Les fichiers sont stockés dans un dossier distinct.
  */
 export async function createSolutionMediaUploadSignature(
-  formData: FormData,
+  formData: FormData
 ) {
   await requireAdmin();
 
   const solutionId = readText(formData, "solutionId");
+  const category = readText(formData, "category") || "galerie";
 
   if (!solutionId) {
     throw new Error("Identifiant de solution manquant.");
+  }
+
+  if (!["galerie", "logo", "couverture"].includes(category)) {
+    throw new Error("Catégorie de média non autorisée.");
   }
 
   const solution = await prisma.solution.findUnique({
@@ -85,11 +90,11 @@ export async function createSolutionMediaUploadSignature(
   }
 
   const timestamp = Math.floor(Date.now() / 1000);
-  const folder = `berem/solutions/${solutionId}/galerie`;
+  const folder = `berem/solutions/${solutionId}/${category}`;
 
   const signature = cloudinary.utils.api_sign_request(
     { timestamp, folder },
-    config.api_secret,
+    config.api_secret
   );
 
   return {
@@ -186,4 +191,84 @@ export async function saveUploadedSolutionMedia(formData: FormData) {
   revalidatePath("/");
 
   return { mediaId: media.id };
+}
+
+
+
+export async function saveUploadedSolutionBrandImage(
+  formData: FormData
+) {
+  await requireAdmin();
+
+  const solutionId = readText(formData, "solutionId");
+  const url = readText(formData, "url");
+  const publicId = readText(formData, "publicId");
+  const category = readText(formData, "category");
+
+  if (!solutionId || !url || !publicId) {
+    throw new Error("Informations de l'image incomplètes.");
+  }
+
+  if (!["logo", "couverture"].includes(category)) {
+    throw new Error("Type d'image non autorisé.");
+  }
+
+  const expectedPrefix =
+    `berem/solutions/${solutionId}/${category}/`;
+
+  if (!publicId.startsWith(expectedPrefix)) {
+    throw new Error("Cette image ne correspond pas à cette solution.");
+  }
+
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    throw new Error("URL de l'image invalide.");
+  }
+
+  if (
+    parsedUrl.protocol !== "https:" ||
+    parsedUrl.hostname !== "res.cloudinary.com"
+  ) {
+    throw new Error("Domaine de l'image non autorisé.");
+  }
+
+  const solution = await prisma.solution.findUnique({
+    where: { id: solutionId },
+    select: { id: true, slug: true },
+  });
+
+  if (!solution) {
+    throw new Error("Solution introuvable.");
+  }
+
+  const asset = await cloudinary.api.resource(publicId, {
+    resource_type: "image",
+  });
+
+  if (
+    asset.secure_url !== url ||
+    asset.public_id !== publicId ||
+    asset.resource_type !== "image"
+  ) {
+    throw new Error("L'image Cloudinary n'a pas pu être vérifiée.");
+  }
+
+  const field = category === "logo" ? "logoUrl" : "coverImageUrl";
+
+  await prisma.solution.update({
+    where: { id: solutionId },
+    data: {
+      [field]: url,
+    },
+  });
+
+  revalidatePath("/admin/solutions");
+  revalidatePath("/solutions");
+  revalidatePath(`/solutions/${solution.slug}`);
+  revalidatePath("/");
+
+  return { url };
 }

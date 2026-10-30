@@ -97,7 +97,7 @@ export function Gallery({
   layout = "masonry",
 }: {
   images: GalleryImage[];
-  layout?: "masonry" | "grid";
+  layout?: "masonry" | "grid" | "story";
 }) {
   const [index, setIndex] = useState<number | null>(null);
 
@@ -135,7 +135,9 @@ export function Gallery({
         className={
           layout === "masonry"
             ? "columns-1 gap-4 sm:columns-2 lg:columns-3 [&>button]:mb-4"
-            : "grid grid-cols-2 gap-3 sm:grid-cols-3"
+            : layout === "story"
+              ? "grid grid-cols-2 gap-3 sm:grid-cols-3 [&>button:first-child]:col-span-2 sm:[&>button:first-child]:col-span-3"
+              : "grid grid-cols-2 gap-3 sm:grid-cols-3"
         }
       >
         {images.map((img, i) => (
@@ -152,7 +154,11 @@ export function Gallery({
               alt={img.alt}
               loading="lazy"
               className={`w-full object-cover transition duration-500 group-hover:scale-105 motion-reduce:transition-none ${
-                layout === "grid" ? "aspect-[4/3]" : ""
+                layout === "masonry"
+                  ? ""
+                  : layout === "story" && i === 0
+                    ? "aspect-[16/9]"
+                    : "aspect-[4/3]"
               }`}
             />
             {img.caption && layout === "masonry" && (

@@ -1,23 +1,74 @@
 @import "tailwindcss";
 
 :root {
-  /* Identité visuelle BEREM */
-  --brand-primary: #392319;
-  --brand-primary-hover: #4b3023;
-  --brand-olive: #696b43;
-  --brand-sand: #c1a18f;
+  /* ========================================
+     IDENTITÉ VISUELLE BEREM
+     ======================================== */
 
-  /* Couleurs neutres */
-  --background: #faf9f6;
-  --surface: #f0ebe4;
-  --foreground: #303438;
-  --muted: #62666a;
-  --border: #e3ded6;
-  --white: #ffffff;
+  --brand-primary: #10161f;
+  --brand-primary-hover: #26364a;
+  --brand-primary-soft: #e9edf2;
 
-  /* Compatibilité avec les anciens noms */
+  --brand-orange: #d59344;
+  --brand-orange-hover: #be7d32;
+  --brand-orange-soft: #f6e7d2;
+
+  /* Ancien nom conservé pour compatibilité */
+  --brand-olive: #d59344;
+  --brand-olive-hover: #be7d32;
+  --brand-olive-soft: #f6e7d2;
+
+  --brand-sand: #e8cba8;
+  --brand-sand-soft: #fbf2e7;
+
+  /* ========================================
+     COULEURS DES SURFACES
+     ======================================== */
+
+  --background: #fbf7f1;
+  --surface: #f6e7d2;
+  --surface-elevated: #ffffff;
+  --surface-dark: #10161f;
+
+  /* ========================================
+     TEXTES
+     ======================================== */
+
+  --foreground: #172033;
+  --muted: #647084;
+  --text-on-dark: #ffffff;
+  --text-on-primary: #ffffff;
+
+  /* ========================================
+     BORDURES ET INTERACTIONS
+     ======================================== */
+
+  --border: #eae1d7;
+  --border-strong: #d8c8b7;
+  --focus-ring: #d59344;
+
+  /* ========================================
+     ÉTATS FONCTIONNELS
+     ======================================== */
+
+  --success: #278052;
+  --success-soft: #e8f4ed;
+
+  --warning: #a66b20;
+  --warning-soft: #fbf0df;
+
+  --danger: #bd4545;
+  --danger-soft: #faeaea;
+
+  --info: #386b91;
+  --info-soft: #eaf2f8;
+
+  /* ========================================
+     COMPATIBILITÉ ANCIENS COMPOSANTS
+     ======================================== */
+
   --brand-navy: var(--brand-primary);
-  --brand-orange: var(--brand-olive);
+  --white: #ffffff;
 }
 
 @theme inline {
@@ -25,14 +76,34 @@
   --color-foreground: var(--foreground);
 
   --color-berem-primary: var(--brand-primary);
+  --color-berem-primary-hover: var(--brand-primary-hover);
+  --color-berem-primary-soft: var(--brand-primary-soft);
+
+  --color-berem-orange: var(--brand-orange);
+  --color-berem-orange-hover: var(--brand-orange-hover);
+  --color-berem-orange-soft: var(--brand-orange-soft);
+
   --color-berem-olive: var(--brand-olive);
+  --color-berem-olive-hover: var(--brand-olive-hover);
+  --color-berem-olive-soft: var(--brand-olive-soft);
+
   --color-berem-sand: var(--brand-sand);
+  --color-berem-sand-soft: var(--brand-sand-soft);
 
   --color-berem-surface: var(--surface);
+  --color-berem-surface-elevated: var(--surface-elevated);
+  --color-berem-surface-dark: var(--surface-dark);
+
   --color-berem-muted: var(--muted);
   --color-berem-border: var(--border);
+  --color-berem-border-strong: var(--border-strong);
 
-  --font-sans: var(--font-geist-sans);
+  --color-berem-success: var(--success);
+  --color-berem-warning: var(--warning);
+  --color-berem-danger: var(--danger);
+  --color-berem-info: var(--info);
+
+  --font-sans: var(--font-manrope);
 }
 
 * {
@@ -48,14 +119,14 @@ body {
   min-height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--brand-primary);
-  color: var(--white);
+  background: var(--brand-orange);
+  color: var(--brand-primary);
 }
 
 a {
@@ -72,6 +143,11 @@ select {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {

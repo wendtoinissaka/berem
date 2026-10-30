@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 
 const navigation = [
   { label: "Accueil", href: "/" },
@@ -15,92 +17,162 @@ const navigation = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Fermer le menu lors d'un changement de page
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  // Fermer le menu avec la touche Échap
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-berem-border bg-white/95 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+    <header className="sticky top-0 z-50 border-b border-berem-border bg-white">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-8 lg:px-10">
+
+        {/* IDENTITÉ BEREM */}
         <Link
           href="/"
-          className="flex shrink-0 items-center"
           aria-label="BEREM - Accueil"
-          onClick={() => setMenuOpen(false)}
+          className="flex shrink-0 items-center gap-1"
         >
           <Image
             src="/images/berem-logo.png"
-            alt="BEREM — Génie civil et construction"
-            width={180}
-            height={100}
+            alt="Logo BEREM"
+            width={200}
+            height={120}
             priority
-            className="h-14 w-auto object-contain"
+            className="h-12 w-auto object-contain sm:h-14 lg:h-16"
           />
+
+          <span className="-ml-1 text-lg font-extrabold tracking-[0.07em] text-berem-primary sm:text-xl lg:text-2xl">
+            BEREM
+          </span>
         </Link>
 
+        {/* NAVIGATION DESKTOP */}
         <nav
           aria-label="Navigation principale"
           className="hidden items-center gap-5 lg:flex xl:gap-7"
         >
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-medium text-berem-muted transition-colors duration-200 hover:text-berem-primary"
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navigation.map((item) => {
+            const active = isActive(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`relative py-2 text-[13px] font-semibold transition-colors duration-200 ${
+                  active
+                    ? "text-berem-orange"
+                    : "text-berem-primary hover:text-berem-orange"
+                }`}
+              >
+                {item.label}
+
+                {active && (
+                  <span className="absolute inset-x-0 -bottom-1 h-[2px] rounded-full bg-berem-orange" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="hidden lg:block">
-          <Link
-            href="/devis"
-            className="inline-flex items-center gap-3 bg-berem-primary px-5 py-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#4b3023] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-berem-primary"
-          >
-            Demander un devis
-            <span aria-hidden="true">↗</span>
-          </Link>
-        </div>
+        {/* BOUTON DEVIS DESKTOP */}
+        <Link
+          href="/devis"
+          className="hidden items-center gap-2 rounded-full bg-berem-orange px-5 py-3 text-[13px] font-bold text-berem-primary transition-all duration-200 hover:bg-berem-orange-hover lg:inline-flex"
+        >
+          Demander un devis
+          <ArrowUpRight size={16} strokeWidth={2} />
+        </Link>
 
+        {/* BOUTON MENU MOBILE */}
         <button
           type="button"
           aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
           onClick={() => setMenuOpen((open) => !open)}
-          className="flex h-11 w-11 items-center justify-center border border-berem-border text-2xl text-berem-primary transition-colors hover:bg-berem-surface lg:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-berem-border text-berem-primary transition-colors hover:bg-berem-orange-soft lg:hidden"
         >
-          {menuOpen ? "×" : "☰"}
+          {menuOpen ? (
+            <X size={21} strokeWidth={1.8} />
+          ) : (
+            <Menu size={21} strokeWidth={1.8} />
+          )}
         </button>
       </div>
 
-      {menuOpen && (
-        <nav
-          id="mobile-navigation"
-          aria-label="Navigation mobile"
-          className="border-t border-berem-border bg-white px-5 py-5 lg:hidden"
-        >
-          <div className="mx-auto flex max-w-7xl flex-col gap-1">
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-                className="px-4 py-3 text-sm font-medium text-berem-muted transition-colors hover:bg-berem-surface hover:text-berem-primary"
-              >
-                {item.label}
-              </Link>
-            ))}
+      {/* MENU MOBILE */}
+      <div
+        id="mobile-navigation"
+        aria-label="Navigation mobile"
+        aria-hidden={!menuOpen}
+        inert={!menuOpen}
+        className={`absolute inset-x-0 top-full overflow-hidden border-b border-berem-border bg-white shadow-xl transition-all duration-300 ease-in-out lg:hidden ${
+          menuOpen
+            ? "visible max-h-[520px] translate-y-0 opacity-100"
+            : "invisible max-h-0 -translate-y-2 opacity-0"
+        }`}
+      >
+        <nav className="mx-auto max-w-7xl px-5 pb-6 pt-3 sm:px-8">
+          <div className="divide-y divide-berem-border">
+            {navigation.map((item, index) => {
+              const active = isActive(item.href);
 
-            <Link
-              href="/devis"
-              onClick={() => setMenuOpen(false)}
-              className="mt-3 flex items-center justify-center gap-2 bg-berem-primary px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#4b3023]"
-            >
-              Demander un devis
-              <span aria-hidden="true">↗</span>
-            </Link>
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center justify-between py-3.5 text-sm font-semibold transition-colors ${
+                    active
+                      ? "text-berem-orange"
+                      : "text-berem-primary hover:text-berem-orange"
+                  }`}
+                >
+                  <span>{item.label}</span>
+
+                  {active && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-berem-orange" />
+                  )}
+                </Link>
+              );
+            })}
           </div>
+
+          {/* ACTION MOBILE */}
+          <Link
+            href="/devis"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-berem-orange px-5 py-3.5 text-sm font-bold text-berem-primary transition-colors hover:bg-berem-orange-hover"
+          >
+            Demander un devis
+            <ArrowUpRight size={17} />
+          </Link>
+
+          <p className="mt-4 text-center text-[11px] font-medium tracking-wide text-berem-muted">
+            BEREM - Génie civil & construction
+          </p>
         </nav>
-      )}
+      </div>
     </header>
   );
 }

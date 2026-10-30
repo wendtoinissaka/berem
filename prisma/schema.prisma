@@ -86,10 +86,12 @@ model Project {
   @@index([archivedAt])
 }
 
+
 model ProjectMedia {
   id        String    @id @default(cuid())
   projectId String
   url       String
+  publicId  String?
   type      MediaType
   caption   String?
   sortOrder Int       @default(0)
@@ -97,6 +99,7 @@ model ProjectMedia {
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
+
 
 model ProjectStage {
   id          String             @id @default(cuid())
@@ -142,6 +145,7 @@ model ProjectUpdateMedia {
   id              String    @id @default(cuid())
   projectUpdateId String
   url             String
+  publicId        String?
   type            MediaType
   caption         String?
   sortOrder       Int       @default(0)

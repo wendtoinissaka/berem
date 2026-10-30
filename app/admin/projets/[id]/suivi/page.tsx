@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProjectStageStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import ProjectUpdateMediaGallery from "@/components/admin/projets/project-update-media-gallery";
 import ProjectUpdateMediaUpload from "@/components/admin/projets/project-update-media-upload";
 import {
   createProjectStage,
@@ -938,92 +939,27 @@ export default async function ProjectTrackingPage({
                           updateId={update.id}
                         />
 
-                        {update.media.length === 0 ? (
-                          <p className="rounded-lg bg-slate-50 p-4 text-sm text-slate-500">
-                            Aucun média ajouté à ce compte rendu pour le
-                            moment.
-                          </p>
-                        ) : (
-                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {update.media.map((media) => (
-                              <div
-                                key={media.id}
-                                className="overflow-hidden rounded-xl border border-slate-200 bg-white"
-                              >
-                                {media.type === "VIDEO" ? (
-                                  <video
-                                    src={media.url}
-                                    controls
-                                    preload="metadata"
-                                    className="aspect-video w-full bg-black object-contain"
-                                  />
-                                ) : (
-                                  <a
-                                    href={media.url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
-                                      src={media.url}
-                                      alt={media.caption ?? update.title}
-                                      loading="lazy"
-                                      className="aspect-video w-full object-cover"
-                                    />
-                                  </a>
-                                )}
-
-                                {media.caption && (
-                                  <p className="p-3 text-sm text-slate-600">
-                                    {media.caption}
-                                  </p>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <ProjectUpdateMediaGallery
+                          projectId={project.id}
+                          updateId={update.id}
+                          updateTitle={update.title}
+                          media={update.media}
+                          canDelete={!archived}
+                        />
                       </div>
                     </details>
                   )}
 
                   {/* Les médias restent consultables sur un chantier archivé */}
                   {archived && update.media.length > 0 && (
-                    <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                      {update.media.map((media) => (
-                        <div
-                          key={media.id}
-                          className="overflow-hidden rounded-xl border border-slate-200 bg-white"
-                        >
-                          {media.type === "VIDEO" ? (
-                            <video
-                              src={media.url}
-                              controls
-                              preload="metadata"
-                              className="aspect-video w-full bg-black object-contain"
-                            />
-                          ) : (
-                            <a
-                              href={media.url}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                src={media.url}
-                                alt={media.caption ?? update.title}
-                                loading="lazy"
-                                className="aspect-video w-full object-cover"
-                              />
-                            </a>
-                          )}
-
-                          {media.caption && (
-                            <p className="p-3 text-sm text-slate-600">
-                              {media.caption}
-                            </p>
-                          )}
-                        </div>
-                      ))}
+                    <div className="mt-5">
+                      <ProjectUpdateMediaGallery
+                        projectId={project.id}
+                        updateId={update.id}
+                        updateTitle={update.title}
+                        media={update.media}
+                        canDelete={false}
+                      />
                     </div>
                   )}
                 </div>

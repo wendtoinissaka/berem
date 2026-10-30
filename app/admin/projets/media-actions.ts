@@ -142,15 +142,16 @@ export async function saveUploadedProjectMedia(formData: FormData) {
     select: { sortOrder: true },
   });
 
-  await prisma.projectUpdateMedia.create({
-    data: {
-      projectUpdateId: updateId,
-      url,
-      type: resourceType === "video" ? MediaType.VIDEO : MediaType.IMAGE,
-      caption: caption || null,
-      sortOrder: (lastMedia?.sortOrder ?? -1) + 1,
-    },
-  });
+await prisma.projectUpdateMedia.create({
+  data: {
+    projectUpdateId: updateId,
+    url,
+    publicId,
+    type: resourceType === "video" ? MediaType.VIDEO : MediaType.IMAGE,
+    caption: caption || null,
+    sortOrder: (lastMedia?.sortOrder ?? -1) + 1,
+  },
+});
 
   revalidatePath(`/admin/projets/${projectId}/suivi`);
   revalidatePath(`/realisations/${project.slug}`);
@@ -296,13 +297,14 @@ export async function saveUploadedProjectLevelMedia(formData: FormData) {
   });
 
   await prisma.projectMedia.create({
-    data: {
-      projectId,
-      url,
-      type: resourceType === "video" ? MediaType.VIDEO : MediaType.IMAGE,
-      caption: caption || null,
-      sortOrder: (lastMedia?.sortOrder ?? -1) + 1,
-    },
+data: {
+  projectId,
+  url,
+  publicId,
+  type: resourceType === "video" ? MediaType.VIDEO : MediaType.IMAGE,
+  caption: caption || null,
+  sortOrder: (lastMedia?.sortOrder ?? -1) + 1,
+},
   });
 
   // Actualiser les pages concernées.
@@ -310,5 +312,301 @@ export async function saveUploadedProjectLevelMedia(formData: FormData) {
   revalidatePath(`/admin/projets/${projectId}/modifier`);
   revalidatePath("/realisations");
   revalidatePath(`/realisations/${project.slug}`);
+  revalidatePath("/");
+}
+
+
+
+/**
+ * Réorganise les médias de la galerie principale d'un chantier.
+ * Le premier média de type IMAGE détermine la couverture publique.
+ */
+export async function moveProjectMedia(formData: FormData) {
+  await requireAdmin();
+
+  const projectId = readText(formData, "projectId");
+  const mediaId = readText(formData, "mediaId");
+  const direction = readText(formData, "direction");
+
+  if (
+    !projectId ||
+    !mediaId ||
+    !["up", "down", "cover"].includes(direction)
+  ) {
+    throw new Error("Paramètres de réorganisation invalides.");
+  }
+
+  const project = await prisma.project.findFirst({
+    where: {
+      id: projectId,
+      archivedAt: null,
+    },
+    select: {
+      id: true,
+      slug: true,
+    },
+  });
+
+  if (!project) {
+    throw new Error("Chantier introuvable ou archivé.");
+  }
+
+  const mediaList = await prisma.projectMedia.findMany({
+    where: { projectId },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+  });
+
+  const currentIndex = mediaList.findIndex((media) => media.id === mediaId);
+
+  if (currentIndex === -1) {
+    throw new Error("Média introuvable dans cette galerie.");
+  }
+
+  if (direction === "cover") {
+    if (mediaList[currentIndex].type !== "IMAGE") {
+      throw new Error("Seules les photos peuvent servir de couverture.");
+    }
+
+    // La photo choisie passe avant les autres médias.
+    const selected = mediaList.splice(currentIndex, 1)[0];
+    mediaList.unshift(selected);
+  } else {
+    const targetIndex =
+      direction === "up" ? currentIndex - 1 : currentIndex + 1;
+
+    if (targetIndex < 0 || targetIndex >= mediaList.length) {
+      return;
+    }
+
+    [mediaList[currentIndex], mediaList[targetIndex]] = [
+      mediaList[targetIndex],
+      mediaList[currentIndex],
+    ];
+  }
+
+  // Réattribuer des positions continues afin d'éviter les doublons.
+  await prisma.$transaction(
+    mediaList.map((media, index) =>
+      prisma.projectMedia.update({
+        where: { id: media.id },
+        data: { sortOrder: index },
+      })
+    )
+  );
+
+  revalidatePath(`/admin/projets/${projectId}/modifier`);
+  revalidatePath("/admin/projets");
+  revalidatePath("/realisations");
+  revalidatePath(`/realisations/${project.slug}`);
+  revalidatePath("/");
+}
+
+/**
+ * Supprime un média de la galerie principale d'un chantier.
+ */
+export async function deleteProjectMedia(formData: FormData) {
+  await requireAdmin();
+
+  const projectId = readText(formData, "projectId");
+  const mediaId = readText(formData, "mediaId");
+
+  if (!projectId || !mediaId) {
+    throw new Error("Informations de suppression incomplètes.");
+  }
+
+  const project = await prisma.project.findFirst({
+    where: {
+      id: projectId,
+      archivedAt: null,
+    },
+    select: {
+      id: true,
+      slug: true,
+    },
+  });
+
+  if (!project) {
+    throw new Error("Chantier introuvable ou archivé.");
+  }
+
+  const media = await prisma.projectMedia.findFirst({
+    where: {
+      id: mediaId,
+      projectId,
+    },
+  });
+
+  if (!media) {
+    throw new Error("Média introuvable dans cette galerie.");
+  }
+
+  // On supprime d'abord le fichier Cloudinary si son publicId est connu.
+  if (media.publicId) {
+    const expectedPrefix = `berem/chantiers/${projectId}/galerie/`;
+
+    if (!media.publicId.startsWith(expectedPrefix)) {
+      throw new Error("Le média ne correspond pas au dossier Cloudinary du chantier.");
+    }
+
+    const resourceType = media.type === "VIDEO" ? "video" : "image";
+
+    const result = await cloudinary.uploader.destroy(media.publicId, {
+      resource_type: resourceType,
+      invalidate: true,
+    });
+
+    if (result.result !== "ok" && result.result !== "not found") {
+      throw new Error("La suppression du fichier Cloudinary a échoué.");
+    }
+  }
+
+  // Supprimer l'enregistrement uniquement après le traitement Cloudinary.
+  await prisma.projectMedia.delete({
+    where: { id: media.id },
+  });
+
+  const remainingMedia = await prisma.projectMedia.findMany({
+    where: { projectId },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: { id: true },
+  });
+
+  await prisma.$transaction(
+    remainingMedia.map((item, index) =>
+      prisma.projectMedia.update({
+        where: { id: item.id },
+        data: { sortOrder: index },
+      })
+    )
+  );
+
+  revalidatePath(`/admin/projets/${projectId}/modifier`);
+  revalidatePath("/admin/projets");
+  revalidatePath("/realisations");
+  revalidatePath(`/realisations/${project.slug}`);
+  revalidatePath("/");
+}
+
+
+/**
+ * Supprime un média associé à un compte rendu de chantier.
+ */
+export async function deleteProjectUpdateMedia(formData: FormData) {
+  await requireAdmin();
+
+  const projectId = readText(formData, "projectId");
+  const updateId = readText(formData, "updateId");
+  const mediaId = readText(formData, "mediaId");
+
+  if (!projectId || !updateId || !mediaId) {
+    throw new Error("Informations de suppression incomplètes.");
+  }
+
+  const project = await prisma.project.findFirst({
+    where: {
+      id: projectId,
+      archivedAt: null,
+    },
+    select: {
+      id: true,
+      slug: true,
+    },
+  });
+
+  if (!project) {
+    throw new Error("Chantier introuvable ou archivé.");
+  }
+
+  const update = await prisma.projectUpdate.findFirst({
+    where: {
+      id: updateId,
+      projectId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!update) {
+    throw new Error("Compte rendu introuvable.");
+  }
+
+  const media = await prisma.projectUpdateMedia.findFirst({
+    where: {
+      id: mediaId,
+      projectUpdateId: updateId,
+    },
+  });
+
+  if (!media) {
+    throw new Error("Média introuvable dans ce compte rendu.");
+  }
+
+  // Les anciens médias sans publicId ne peuvent pas être supprimés
+  // de Cloudinary de manière suffisamment sûre.
+  if (!media.publicId) {
+    throw new Error(
+      "Ce média ancien ne possède pas d'identifiant Cloudinary. " +
+      "Il faut retrouver son identifiant avant de pouvoir le supprimer."
+    );
+  }
+
+  const expectedPrefix =
+    `berem/chantiers/${projectId}/${updateId}/`;
+
+  if (!media.publicId.startsWith(expectedPrefix)) {
+    throw new Error(
+      "Le média ne correspond pas au dossier Cloudinary de ce compte rendu."
+    );
+  }
+
+  const resourceType = media.type === "VIDEO" ? "video" : "image";
+
+  // Supprimer le fichier Cloudinary avant de supprimer sa référence en base.
+  const result = await cloudinary.uploader.destroy(media.publicId, {
+    resource_type: resourceType,
+    invalidate: true,
+  });
+
+  if (result.result !== "ok" && result.result !== "not found") {
+    throw new Error("La suppression du fichier Cloudinary a échoué.");
+  }
+
+  await prisma.projectUpdateMedia.delete({
+    where: {
+      id: media.id,
+    },
+  });
+
+  // Réorganiser les médias restants.
+  const remainingMedia = await prisma.projectUpdateMedia.findMany({
+    where: {
+      projectUpdateId: updateId,
+    },
+    orderBy: [
+      { sortOrder: "asc" },
+      { createdAt: "asc" },
+    ],
+    select: {
+      id: true,
+    },
+  });
+
+  await prisma.$transaction(
+    remainingMedia.map((item, index) =>
+      prisma.projectUpdateMedia.update({
+        where: {
+          id: item.id,
+        },
+        data: {
+          sortOrder: index,
+        },
+      })
+    )
+  );
+
+  revalidatePath(`/admin/projets/${projectId}/suivi`);
+  revalidatePath(`/realisations/${project.slug}`);
+  revalidatePath("/realisations");
   revalidatePath("/");
 }

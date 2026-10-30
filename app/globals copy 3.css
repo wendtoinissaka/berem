@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+:root {
+  /* ========================================
+     IDENTITÉ VISUELLE BEREM
+     ======================================== */
+
+  --brand-primary: #392319;
+  --brand-primary-hover: #4b3023;
+  --brand-primary-soft: #eee7e2;
+
+  --brand-olive: #696b43;
+  --brand-olive-hover: #555737;
+  --brand-olive-soft: #eff0e7;
+
+  --brand-sand: #c1a18f;
+  --brand-sand-soft: #f3ebe5;
+
+  /* ========================================
+     COULEURS DES SURFACES
+     ======================================== */
+
+  --background: #faf9f6;
+  --surface: #f0ebe4;
+  --surface-elevated: #ffffff;
+  --surface-dark: #30251f;
+
+  /* ========================================
+     TEXTES
+     ======================================== */
+
+  --foreground: #303438;
+  --muted: #62666a;
+  --text-on-dark: #faf9f6;
+  --text-on-primary: #ffffff;
+
+  /* ========================================
+     BORDURES ET INTERACTIONS
+     ======================================== */
+
+  --border: #e3ded6;
+  --border-strong: #cfc4b9;
+  --focus-ring: #696b43;
+
+  /* ========================================
+     ÉTATS FONCTIONNELS
+     ======================================== */
+
+  --success: #426b4a;
+  --success-soft: #e8f1e8;
+
+  --warning: #8a642b;
+  --warning-soft: #f7efdf;
+
+  --danger: #a33d35;
+  --danger-soft: #f8e9e7;
+
+  --info: #49677c;
+  --info-soft: #e9f0f5;
+
+  /* ========================================
+     COMPATIBILITÉ AVEC LES ANCIENS COMPOSANTS
+     ======================================== */
+
+  --brand-navy: var(--brand-primary);
+  --brand-orange: var(--brand-olive);
+
+  --white: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-berem-primary: var(--brand-primary);
+  --color-berem-primary-hover: var(--brand-primary-hover);
+  --color-berem-primary-soft: var(--brand-primary-soft);
+
+  --color-berem-olive: var(--brand-olive);
+  --color-berem-olive-hover: var(--brand-olive-hover);
+  --color-berem-olive-soft: var(--brand-olive-soft);
+
+  --color-berem-sand: var(--brand-sand);
+  --color-berem-sand-soft: var(--brand-sand-soft);
+
+  --color-berem-surface: var(--surface);
+  --color-berem-surface-elevated: var(--surface-elevated);
+  --color-berem-surface-dark: var(--surface-dark);
+
+  --color-berem-muted: var(--muted);
+  --color-berem-border: var(--border);
+  --color-berem-border-strong: var(--border-strong);
+
+  --color-berem-success: var(--success);
+  --color-berem-warning: var(--warning);
+  --color-berem-danger: var(--danger);
+  --color-berem-info: var(--info);
+
+  --font-sans: var(--font-geist-sans);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  min-height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--brand-primary);
+  color: var(--white);
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

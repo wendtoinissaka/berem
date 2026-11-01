@@ -5,6 +5,16 @@ import Link from "next/link";
 import SolutionMediaUpload from "@/components/admin/solutions/solution-media-upload";
 import { createSolution, updateSolution } from "@/app/admin/solutions/actions";
 import SolutionBrandImageUpload from "@/components/admin/solutions/solution-brand-image-upload";
+import { deleteSolutionMedia } from "@/app/admin/solutions/media-actions";
+import {
+  Trash2,
+  Image as ImageIcon,
+  Video,
+  X,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
+
 
 type Feature = {
   title: string;
@@ -24,16 +34,27 @@ type SolutionFormData = {
   isFeatured?: boolean;
   sortOrder?: number;
   features?: Feature[];
+  media?: SolutionMedia[];
 };
 
 type Props = {
   initialData?: SolutionFormData;
 };
 
-const inputClass =
-  "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-100";
+type SolutionMedia = {
+  id: string;
+  url: string;
+  publicId: string | null;
+  type: "IMAGE" | "VIDEO";
+  caption: string | null;
+};
 
-const labelClass = "block text-sm font-semibold text-slate-700";
+
+const inputClass =
+  "mt-2 w-full rounded-xl border border-[#EAE1D7] bg-white px-4 py-3 text-sm text-[#172033] outline-none transition placeholder:text-[#647084]/70 focus:border-[#D59344] focus:ring-2 focus:ring-[#D59344]/15";
+
+const labelClass =
+  "block text-sm font-semibold text-[#26364A]";
 
 export default function SolutionForm({ initialData }: Props) {
   const isEditing = Boolean(initialData?.id);
@@ -52,6 +73,48 @@ export default function SolutionForm({ initialData }: Props) {
 const [coverImageUrl, setCoverImageUrl] = useState(
   initialData?.coverImageUrl ?? ""
 );
+
+const [media, setMedia] = useState<SolutionMedia[]>(
+  initialData?.media ?? [],
+);
+
+const [deletingMediaId, setDeletingMediaId] = useState<string | null>(null);
+const [mediaMessage, setMediaMessage] = useState("");
+const [mediaToDelete, setMediaToDelete] = useState<SolutionMedia | null>(null);
+
+function requestMediaDeletion(item: SolutionMedia) {
+  setMediaToDelete(item);
+}
+
+async function confirmMediaDeletion() {
+  if (!mediaToDelete) return;
+
+  const mediaId = mediaToDelete.id;
+
+  setDeletingMediaId(mediaId);
+  setMediaMessage("");
+
+  try {
+    const formData = new FormData();
+    formData.set("mediaId", mediaId);
+    formData.set("solutionId", solutionId);
+
+    await deleteSolutionMedia(formData);
+
+    setMedia((current) => current.filter((item) => item.id !== mediaId));
+    setMediaMessage("Le média a été supprimé avec succès.");
+    setMediaToDelete(null);
+  } catch (error) {
+    setMediaMessage(
+      error instanceof Error
+        ? error.message
+        : "Impossible de supprimer ce média.",
+    );
+  } finally {
+    setDeletingMediaId(null);
+  }
+}
+
 
   function updateFeature(
     index: number,
@@ -281,21 +344,121 @@ const [coverImageUrl, setCoverImageUrl] = useState(
 </section>
 
 {/* Galerie de la solution */}
-<section className="space-y-4">
+<section className="space-y-6 rounded-2xl border border-[#EAE1D7] bg-white p-6 shadow-sm sm:p-8">
+
   <div>
-    <h2 className="text-xl font-bold text-[#102A43]">
-      4. Galerie de médias
+    <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#D59344]">
+      Médias
+    </p>
+
+    <h2 className="mt-2 text-xl font-bold text-[#10161F]">
+      4. Galerie de la solution
     </h2>
 
-    <p className="mt-1 text-sm text-slate-500">
-      Ajoute les captures d'écran, illustrations et vidéos de présentation.
+    <p className="mt-1 text-sm text-[#647084]">
+      Consulte les médias enregistrés, supprime ceux qui ne sont plus utiles
+      ou ajoute de nouveaux fichiers.
     </p>
   </div>
 
-  <SolutionMediaUpload
-    initialSolutionId={solutionId || undefined}
-    onSolutionReady={setSolutionId}
-  />
+  {media.length > 0 ? (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      {media.map((item) => (
+        <div
+          key={item.id}
+          className="group overflow-hidden rounded-xl border border-[#EAE1D7] bg-[#FBF7F1] shadow-sm transition hover:shadow-md"
+        >
+          {item.type === "IMAGE" ? (
+            <img
+              src={item.url}
+              alt={item.caption || "Média de la solution"}
+              className="h-40 w-full object-cover"
+            />
+          ) : (
+            <video
+              src={item.url}
+              controls
+              preload="metadata"
+              className="h-40 w-full bg-[#10161F] object-contain"
+            />
+          )}
+
+          <div className="space-y-3 p-3">
+
+            <div className="flex items-center gap-2 text-xs font-medium text-[#647084]">
+              {item.type === "IMAGE" ? (
+                <ImageIcon size={15} />
+              ) : (
+                <Video size={15} />
+              )}
+
+              <span>
+                {item.type === "IMAGE" ? "Image" : "Vidéo"}
+              </span>
+            </div>
+
+            {item.caption && (
+              <p className="line-clamp-2 text-sm text-[#26364A]">
+                {item.caption}
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={() => requestMediaDeletion(item)}
+              disabled={Boolean(deletingMediaId)}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 size={15} />
+              Supprimer
+            </button>
+
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="rounded-xl border border-dashed border-[#D9CBBB] bg-[#FBF7F1] p-8 text-center">
+      <ImageIcon className="mx-auto text-[#647084]" size={30} />
+
+      <p className="mt-3 text-sm font-semibold text-[#26364A]">
+        Aucun média enregistré
+      </p>
+
+      <p className="mt-1 text-xs text-[#647084]">
+        Les images et vidéos ajoutées apparaîtront ici.
+      </p>
+    </div>
+  )}
+
+  {mediaMessage && (
+    <div
+      role="status"
+      className="rounded-lg border border-[#EAE1D7] bg-[#FBF7F1] px-4 py-3 text-sm text-[#26364A]"
+    >
+      {mediaMessage}
+    </div>
+  )}
+
+  <div className="border-t border-[#EAE1D7] pt-6">
+    <h3 className="mb-2 font-bold text-[#10161F]">
+      Ajouter de nouveaux médias
+    </h3>
+
+    <p className="mb-4 text-sm text-[#647084]">
+      Tu peux ajouter des captures d'écran, des illustrations ou des vidéos
+      pour enrichir la présentation de cette solution.
+    </p>
+
+<SolutionMediaUpload
+  initialSolutionId={solutionId || undefined}
+  onSolutionReady={setSolutionId}
+  onMediaUploaded={(newMedia) => {
+    setMedia((current) => [...current, ...newMedia]);
+  }}
+/>
+  </div>
+
 </section>
 
       <section className="space-y-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
@@ -304,7 +467,7 @@ const [coverImageUrl, setCoverImageUrl] = useState(
             Liens
           </p>
           <h2 className="mt-2 text-xl font-bold text-[#102A43]">
-            3. Liens et présentation
+            5. Liens et présentation
           </h2>
         </div>
 
@@ -344,7 +507,7 @@ const [coverImageUrl, setCoverImageUrl] = useState(
             Publication
           </p>
           <h2 className="mt-2 text-xl font-bold text-[#102A43]">
-            4. Visibilité de la solution
+            6. Visibilité de la solution
           </h2>
         </div>
 
@@ -412,6 +575,115 @@ const [coverImageUrl, setCoverImageUrl] = useState(
           {isEditing ? "Enregistrer les modifications" : "Enregistrer la solution"}
         </button>
       </div>
+      {mediaToDelete && (
+  <div
+    className="fixed inset-0 z-[100] flex items-center justify-center bg-[#10161F]/70 p-4 backdrop-blur-sm"
+    role="presentation"
+    onMouseDown={(event) => {
+      if (event.target === event.currentTarget && !deletingMediaId) {
+        setMediaToDelete(null);
+      }
+    }}
+  >
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-media-title"
+      aria-describedby="delete-media-description"
+      className="w-full max-w-md overflow-hidden rounded-2xl border border-[#EAE1D7] bg-[#FBF7F1] shadow-2xl"
+    >
+      <div className="flex items-center justify-between border-b border-[#EAE1D7] px-6 py-4">
+        <h3 className="font-bold text-[#10161F]">
+          Confirmation de suppression
+        </h3>
+
+        <button
+          type="button"
+          onClick={() => setMediaToDelete(null)}
+          disabled={Boolean(deletingMediaId)}
+          aria-label="Fermer"
+          className="rounded-lg p-2 text-[#647084] transition hover:bg-[#F3E9DC] hover:text-[#10161F] disabled:opacity-50"
+        >
+          <X size={19} />
+        </button>
+      </div>
+
+      <div className="p-6">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-red-100 text-red-600">
+          <AlertTriangle size={27} />
+        </div>
+
+        <h4
+          id="delete-media-title"
+          className="mt-4 text-center text-lg font-bold text-[#10161F]"
+        >
+          Supprimer définitivement ce média ?
+        </h4>
+
+        <p
+          id="delete-media-description"
+          className="mt-2 text-center text-sm leading-6 text-[#647084]"
+        >
+          Cette action supprimera le fichier de la galerie et de son espace
+          de stockage. Cette opération est irréversible.
+        </p>
+
+        <div className="mt-5 overflow-hidden rounded-xl border border-[#EAE1D7] bg-white p-2">
+          {mediaToDelete.type === "IMAGE" ? (
+            <img
+              src={mediaToDelete.url}
+              alt={mediaToDelete.caption || "Média à supprimer"}
+              className="h-36 w-full rounded-lg object-contain"
+            />
+          ) : (
+            <video
+              src={mediaToDelete.url}
+              controls
+              preload="metadata"
+              className="h-36 w-full rounded-lg bg-[#10161F] object-contain"
+            />
+          )}
+
+          {mediaToDelete.caption && (
+            <p className="px-2 pb-1 pt-2 text-center text-xs text-[#647084]">
+              {mediaToDelete.caption}
+            </p>
+          )}
+        </div>
+
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => setMediaToDelete(null)}
+            disabled={Boolean(deletingMediaId)}
+            className="flex-1 rounded-xl border border-[#D9CBBB] bg-white px-4 py-3 text-sm font-semibold text-[#26364A] transition hover:bg-[#F3E9DC] disabled:opacity-50"
+          >
+            Annuler
+          </button>
+
+          <button
+            type="button"
+            onClick={confirmMediaDeletion}
+            disabled={Boolean(deletingMediaId)}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {deletingMediaId ? (
+              <>
+                <Loader2 size={17} className="animate-spin" />
+                Suppression...
+              </>
+            ) : (
+              <>
+                <Trash2 size={17} />
+                Supprimer définitivement
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
     </form>
   );
 }

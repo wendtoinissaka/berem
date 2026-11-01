@@ -24,9 +24,9 @@ export default function Home() {
 
       <SolutionsSection />
 
-      <StatsSection />
+      {/* <StatsSection /> */}
 
-      <ContactSection />
+      {/* <ContactSection /> */}
     </>
   );
 }

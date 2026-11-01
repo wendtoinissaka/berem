@@ -1,78 +1,65 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { getHomeStatistics } from "@/lib/statistics";
+import AnimatedStatistics from "@/components/home/AnimatedStatistics";
 
-const advantages = [
-  {
-    number: "01",
-    title: "Rigueur technique",
-    description:
-      "Une approche méthodique pour répondre aux exigences de chaque projet.",
-  },
-  {
-    number: "02",
-    title: "Qualité d'exécution",
-    description:
-      "Une attention particulière portée aux travaux, aux détails et aux finitions.",
-  },
-  {
-    number: "03",
-    title: "Suivi des projets",
-    description:
-      "Une communication structurée pour informer les clients de l'avancement.",
-  },
-];
+export default async function StatsSection() {
+  const statistics = await getHomeStatistics();
 
-export default function StatsSection() {
+  if (statistics.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="bg-[#102A43] py-24 text-white sm:py-28">
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-20 lg:px-10">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#F59E0B]">
-            Notre engagement
-          </p>
+    <section className="relative overflow-hidden bg-[#10161F] py-24 text-white sm:py-28">
+      {/* Décoration d'arrière-plan */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-40 -top-40 h-[500px] w-[500px] rounded-full border border-white/[0.04]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-20 -top-20 h-[350px] w-[350px] rounded-full border border-white/[0.04]"
+      />
 
-          <h2 className="mt-5 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
+      <div className="relative mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-2 lg:items-center lg:gap-20 lg:px-10">
+        {/* Présentation */}
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="h-[2px] w-10 bg-[#D59344]" />
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#D59344]">
+              Notre engagement en chiffres
+            </p>
+          </div>
+
+          <h2 className="mt-6 text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
             Votre vision.
             <br />
             Notre expertise.
             <br />
-            Des réalisations concrètes.
+            <span className="text-[#D59344]">Des réalisations concrètes.</span>
           </h2>
 
-          <p className="mt-7 max-w-xl leading-8 text-slate-300">
-            Chaque projet mérite une attention particulière, une organisation
-            rigoureuse et une communication claire. Notre objectif est de
-            proposer des solutions adaptées aux besoins de nos clients.
+          <p className="mt-7 max-w-xl text-base leading-8 text-slate-300">
+            Derrière chaque chiffre, il y a un engagement, un savoir-faire
+            et une équipe mobilisée pour donner vie à vos projets. Découvrez
+            quelques indicateurs qui témoignent de notre activité.
           </p>
 
           <Link
             href="/entreprise"
-            className="mt-9 inline-flex items-center gap-3 bg-[#F59E0B] px-6 py-4 font-bold text-[#102A43] transition hover:bg-amber-400"
+            className="group mt-9 inline-flex items-center gap-4 bg-[#D59344] px-6 py-4 font-bold text-[#10161F] transition-colors duration-300 hover:bg-[#BE7D32]"
           >
             Découvrir notre entreprise
-            <span aria-hidden="true">→</span>
+            <ArrowRight
+              size={18}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
           </Link>
         </div>
 
-        <div className="space-y-0">
-          {advantages.map((advantage) => (
-            <article
-              key={advantage.number}
-              className="flex gap-6 border-b border-white/15 py-7 first:border-t"
-            >
-              <span className="text-sm font-black tracking-widest text-[#F59E0B]">
-                {advantage.number}
-              </span>
-
-              <div>
-                <h3 className="text-xl font-bold">{advantage.title}</h3>
-
-                <p className="mt-3 leading-7 text-slate-300">
-                  {advantage.description}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
+        {/* Statistiques animées */}
+        <AnimatedStatistics statistics={statistics} />
       </div>
     </section>
   );

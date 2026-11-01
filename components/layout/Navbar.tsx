@@ -47,24 +47,36 @@ export default function Navbar() {
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-8 lg:px-10">
 
         {/* IDENTITÉ BEREM */}
-        <Link
-          href="/"
-          aria-label="BEREM - Accueil"
-          className="flex shrink-0 items-center gap-1"
-        >
-          <Image
-            src="/images/berem-logo.png"
-            alt="Logo BEREM"
-            width={200}
-            height={120}
-            priority
-            className="h-12 w-auto object-contain sm:h-14 lg:h-16"
-          />
+{/* IDENTITÉ BEREM */}
+<Link
+  href="/"
+  aria-label="BEREM - Accueil"
+  className="group flex shrink-0 items-center gap-1"
+>
+  <Image
+    src="/images/berem-logo.png"
+    alt="Logo BEREM"
+    width={200}
+    height={120}
+    priority
+    className="h-12 w-auto object-contain sm:h-14 lg:h-16"
+  />
 
-          <span className="-ml-1 text-lg font-extrabold tracking-[0.07em] text-berem-primary sm:text-xl lg:text-2xl">
-            BEREM
-          </span>
-        </Link>
+  <span className="relative -ml-1 inline-block overflow-hidden text-lg font-extrabold tracking-[0.07em] text-berem-primary sm:text-xl lg:text-2xl">
+    {/* Texte initial */}
+    <span className="block transition-opacity duration-300">
+      BEREM
+    </span>
+
+    {/* Texte animé */}
+    <span
+      aria-hidden="true"
+      className="absolute inset-0 block text-berem-orange [clip-path:inset(0_100%_0_0)] transition-[clip-path] duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:[clip-path:inset(0_0_0_0)]"
+    >
+      BEREM
+    </span>
+  </span>
+</Link>
 
         {/* NAVIGATION DESKTOP */}
         <nav

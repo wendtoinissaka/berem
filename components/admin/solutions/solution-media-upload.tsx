@@ -7,9 +7,18 @@ import {
   saveUploadedSolutionMedia,
 } from "@/app/admin/solutions/media-actions";
 
+type SolutionMedia = {
+  id: string;
+  url: string;
+  publicId: string | null;
+  type: "IMAGE" | "VIDEO";
+  caption: string | null;
+};
+
 type Props = {
   initialSolutionId?: string;
   onSolutionReady?: (id: string) => void;
+  onMediaUploaded?: (media: SolutionMedia[]) => void;
 };
 
 type UploadResult = {
@@ -27,6 +36,7 @@ type PreviewFile = {
 export default function SolutionMediaUpload({
   initialSolutionId,
   onSolutionReady,
+  onMediaUploaded,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 

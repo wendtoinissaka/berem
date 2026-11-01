@@ -1,14 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  MessageCircle,
+} from "lucide-react";
 
 import { prisma } from "@/lib/prisma";
+import SolutionsShowcase from "@/components/solutions/SolutionsShowcase";
 
 export const instant = false;
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Nos solutions | BEREM",
   description:
-    "Découvrez les solutions numériques et les outils proposés par BEREM.",
+    "Découvrez les solutions proposées par BEREM pour répondre aux besoins des entreprises et accompagner leurs projets.",
 };
 
 export default async function SolutionsPage() {
@@ -32,139 +39,120 @@ export default async function SolutionsPage() {
       coverImageUrl: true,
       isFeatured: true,
       actionLabel: true,
+      media: {
+    where: {
+      type: "IMAGE",
+    },
+    orderBy: {
+      sortOrder: "asc",
+    },
+    take: 4,
+    select: {
+      id: true,
+      url: true,
+      caption: true,
+    },
+  },
     },
   });
 
   return (
-    <main className="min-h-screen bg-white">
-      <section className="relative overflow-hidden bg-[#102A43] px-5 py-20 text-white sm:px-8 lg:py-28">
-        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#F59E0B]/10 blur-3xl" />
+    <main className="min-h-screen bg-[#FBF7F1]">
 
-        <div className="relative mx-auto max-w-7xl">
-          <p className="text-sm font-bold uppercase tracking-[0.25em] text-[#F59E0B]">
-            Nos solutions
-          </p>
+      {/* PRÉSENTATION DES SOLUTIONS */}
+      {solutions.length > 0 ? (
+        <SolutionsShowcase solutions={solutions} />
+      ) : (
+        <section className="relative overflow-hidden bg-[#FBF7F1] px-5 py-28 sm:px-8 lg:py-36">
 
-          <h1 className="mt-5 max-w-3xl text-4xl font-black leading-tight sm:text-5xl lg:text-6xl">
-            Des solutions pensées pour vos projets.
-          </h1>
+          <div
+            aria-hidden="true"
+            className="absolute -right-32 -top-32 h-[500px] w-[500px] rounded-full border border-[#D59344]/15"
+          />
 
-          <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-            Découvrez les solutions développées ou proposées par BEREM pour
-            répondre aux besoins des entreprises et accompagner leur évolution.
-          </p>
-        </div>
-      </section>
+          <div className="relative mx-auto max-w-4xl text-center">
 
-      <section className="px-5 py-16 sm:px-8 lg:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-widest text-[#F59E0B]">
-                Catalogue
-              </p>
-              <h2 className="mt-2 text-3xl font-black text-[#102A43]">
-                Explorez nos solutions
-              </h2>
-            </div>
+            <span className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-[#BE7D32]">
+              <span className="h-px w-8 bg-[#D59344]" />
+              Nos solutions
+              <span className="h-px w-8 bg-[#D59344]" />
+            </span>
 
-            <p className="text-sm text-slate-500">
-              {solutions.length} solution{solutions.length > 1 ? "s" : ""}{" "}
-              disponible{solutions.length > 1 ? "s" : ""}
+            <h1 className="mt-8 text-3xl font-semibold leading-tight tracking-tight text-[#172033] sm:text-5xl">
+              Des solutions adaptées
+              <span className="block text-[#BE7D32]">
+                à vos besoins.
+              </span>
+            </h1>
+
+            <p className="mx-auto mt-6 max-w-xl text-sm leading-8 text-[#647084] sm:text-base">
+              Notre catalogue est en cours de préparation. Découvrez
+              prochainement les solutions proposées par BEREM pour
+              accompagner vos projets.
             </p>
+
+            <Link
+              href="/devis"
+              className="mt-9 inline-flex items-center gap-3 bg-[#10161F] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[#D59344] hover:text-[#10161F]"
+            >
+              Échanger avec notre équipe
+              <ArrowUpRight size={18} />
+            </Link>
+
+          </div>
+        </section>
+      )}
+
+      {/* SECTION CONTACT */}
+      <section className="relative overflow-hidden bg-[#F3E9DC] px-5 py-20 sm:px-8 lg:py-24">
+
+        {/* Décoration */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full border border-[#D59344]/20"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-12 -top-20 h-56 w-56 rounded-full border border-[#D59344]/15"
+        />
+
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+
+          <div className="max-w-2xl">
+
+            <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-[#BE7D32]">
+              <MessageCircle size={16} />
+              Échangeons
+            </p>
+
+            <h2 className="mt-5 text-3xl font-semibold leading-tight tracking-tight text-[#172033] sm:text-4xl lg:text-5xl">
+              Vous avez un besoin particulier ?
+            </h2>
+
+            <p className="mt-5 max-w-xl text-sm leading-8 text-[#647084] sm:text-base">
+              Chaque projet est différent. Présentez-nous votre besoin
+              et échangeons ensemble pour identifier une solution
+              adaptée à vos attentes.
+            </p>
+
           </div>
 
-          {solutions.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
-              <h3 className="text-xl font-bold text-[#102A43]">
-                Nos solutions arrivent bientôt
-              </h3>
+          <Link
+            href="/devis"
+            className="group inline-flex shrink-0 items-center justify-center gap-4 self-start bg-[#10161F] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[#D59344] hover:text-[#10161F] lg:self-center"
+          >
+            Parlons de votre projet
 
-              <p className="mx-auto mt-3 max-w-lg leading-7 text-slate-600">
-                Notre catalogue est en cours de préparation. Revenez bientôt
-                pour découvrir les solutions proposées par BEREM.
-              </p>
+            <ArrowRight
+              size={18}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </Link>
 
-              <Link
-                href="/devis"
-                className="mt-7 inline-flex items-center gap-2 rounded-md bg-[#F59E0B] px-6 py-3 font-bold text-[#102A43] transition hover:bg-amber-400"
-              >
-                Parlons de votre projet
-                <span aria-hidden="true">↗</span>
-              </Link>
-            </div>
-          ) : (
-            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-              {solutions.map((solution) => (
-                <article
-                  key={solution.id}
-                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-                >
-                  <Link
-                    href={`/solutions/${solution.slug}`}
-                    className="block"
-                    aria-label={`Découvrir ${solution.name}`}
-                  >
-                    <div className="relative flex h-56 items-center justify-center overflow-hidden bg-slate-100">
-                      {solution.coverImageUrl ? (
-                        <img
-                          src={solution.coverImageUrl}
-                          alt={`Image de présentation de ${solution.name}`}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                        />
-                      ) : solution.logoUrl ? (
-                        <img
-                          src={solution.logoUrl}
-                          alt={`Logo de ${solution.name}`}
-                          className="max-h-32 max-w-[70%] object-contain"
-                        />
-                      ) : (
-                        <span className="text-5xl font-black text-[#102A43]">
-                          {solution.name.charAt(0).toUpperCase()}
-                        </span>
-                      )}
-
-                      {solution.isFeatured && (
-                        <span className="absolute left-4 top-4 rounded-full bg-[#F59E0B] px-3 py-1 text-xs font-bold text-[#102A43]">
-                          À découvrir
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="p-6">
-                      {solution.logoUrl && solution.coverImageUrl && (
-                        <img
-                          src={solution.logoUrl}
-                          alt=""
-                          className="mb-4 h-10 max-w-28 object-contain object-left"
-                        />
-                      )}
-
-                      <h3 className="text-xl font-black text-[#102A43] transition group-hover:text-[#F59E0B]">
-                        {solution.name}
-                      </h3>
-
-                      <p className="mt-3 line-clamp-3 text-sm leading-7 text-slate-600">
-                        {solution.summary}
-                      </p>
-
-                      <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#102A43]">
-                        {solution.actionLabel || "Découvrir la solution"}
-                        <span
-                          aria-hidden="true"
-                          className="transition-transform group-hover:translate-x-1"
-                        >
-                          →
-                        </span>
-                      </span>
-                    </div>
-                  </Link>
-                </article>
-              ))}
-            </div>
-          )}
         </div>
       </section>
+
     </main>
   );
 }

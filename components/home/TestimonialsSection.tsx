@@ -1,5 +1,8 @@
+import { MessageSquareQuote } from "lucide-react";
+
 import { prisma } from "@/lib/prisma";
 import TestimonialsList from "@/components/home/TestimonialsList";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 const MAX_TESTIMONIALS = 24;
 
@@ -31,39 +34,41 @@ export default async function TestimonialsSection() {
     <section
       id="temoignages"
       aria-labelledby="testimonials-title"
-      className="relative overflow-hidden bg-slate-50 py-14 sm:py-16 lg:py-20"
+      className="relative overflow-hidden border-t border-[#EAE1D7] bg-[#FBF7F1] py-24 sm:py-28"
     >
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-        {/* En-tête */}
-        <div className="mb-8 flex flex-col gap-3 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <span
-                aria-hidden="true"
-                className="h-px w-7 bg-amber-600"
-              />
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-700">
-                Témoignages clients
-              </p>
+      <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#D59344]/[0.045] blur-3xl" />
+
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <ScrollReveal>
+          <div className="mb-12 flex flex-col gap-8 border-b border-[#E5DCCE] pb-10 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div className="flex items-center gap-3">
+                <MessageSquareQuote className="text-[#BE7D32]" size={21} />
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#BE7D32]">
+                  La parole à nos clients
+                </p>
+              </div>
+
+              <h2
+                id="testimonials-title"
+                className="mt-6 text-4xl font-black tracking-tight text-[#10161F] sm:text-5xl lg:text-6xl"
+              >
+                La confiance se construit.
+                <br />
+                <span className="text-[#D59344]">Elle se partage aussi.</span>
+              </h2>
             </div>
 
-            <h2
-              id="testimonials-title"
-              className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl"
-            >
-              Ils nous font{" "}
-              <span className="text-amber-600">confiance.</span>
-            </h2>
+            <p className="max-w-md text-base leading-8 text-[#647084]">
+              La satisfaction de nos clients est au cœur de notre engagement.
+              Découvrez leurs retours d'expérience avec BEREM.
+            </p>
           </div>
+        </ScrollReveal>
 
-          <p className="max-w-lg text-sm leading-6 text-slate-600">
-            Découvrez les retours de nos clients sur leur expérience avec
-            BEREM.
-          </p>
-        </div>
-
-        {/* Liste interactive */}
-        <TestimonialsList testimonials={testimonials} />
+        <ScrollReveal delay={120}>
+          <TestimonialsList testimonials={testimonials} />
+        </ScrollReveal>
       </div>
     </section>
   );

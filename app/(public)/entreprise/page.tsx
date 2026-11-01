@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import {
+  ArrowDown,
+  ArrowUpRight,
+  Building2,
+  Compass,
+  Eye,
+  Handshake,
+  ShieldCheck,
+  Target,
+} from "lucide-react";
+
 export const metadata: Metadata = {
   title: "Notre entreprise | BEREM",
   description:
-    "Découvrez BEREM, son approche, ses engagements et sa vision dans le domaine du bâtiment et des travaux.",
+    "Découvrez BEREM, son approche, sa mission, sa vision et les valeurs qui guident ses interventions dans le domaine du bâtiment et des travaux.",
 };
 
 const values = [
@@ -12,210 +23,400 @@ const values = [
     number: "01",
     title: "Qualité",
     description:
-      "Nous accordons une attention particulière à la qualité des travaux, aux finitions et au respect des exigences de chaque projet.",
+      "Une attention particulière portée à la qualité des travaux, aux finitions et aux exigences propres à chaque projet.",
+    icon: ShieldCheck,
   },
   {
     number: "02",
     title: "Engagement",
     description:
-      "Nous nous engageons à accompagner nos clients avec sérieux, transparence et professionnalisme.",
+      "Un accompagnement fondé sur le sérieux, la transparence et le professionnalisme dans chaque collaboration.",
+    icon: Handshake,
   },
   {
     number: "03",
     title: "Rigueur",
     description:
-      "Nous privilégions une organisation méthodique, un suivi rigoureux et une gestion attentive des projets.",
+      "Une organisation méthodique, un suivi attentif et une gestion structurée des différentes étapes.",
+    icon: Compass,
   },
   {
     number: "04",
     title: "Confiance",
     description:
-      "Nous construisons des relations durables avec nos clients et partenaires grâce à une communication claire.",
+      "Des relations professionnelles durables construites autour de l'écoute et d'une communication claire.",
+    icon: Building2,
   },
 ];
 
 export default function EntreprisePage() {
   return (
-    <main className="bg-white text-slate-900">
-      {/* En-tête */}
-      <section className="relative overflow-hidden bg-slate-950 px-6 py-24 text-white md:py-32">
-        <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
+    <main className="overflow-hidden bg-[#FBF7F1] text-[#10161F]">
 
-        <div className="relative mx-auto max-w-7xl">
-          <p className="mb-5 text-sm font-bold uppercase tracking-[0.25em] text-orange-400">
-            À propos de BEREM
-          </p>
+      {/* =====================================================
+          HERO — IDENTITÉ DE L'ENTREPRISE
+      ===================================================== */}
+      <section className="relative isolate overflow-hidden bg-[#10161F] text-white">
 
-          <h1 className="max-w-4xl text-4xl font-bold leading-tight md:text-6xl">
-            Construire avec rigueur,
-            <span className="block text-orange-400">
-              avancer avec confiance.
-            </span>
-          </h1>
+        {/* Trame architecturale */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
+            backgroundSize: "72px 72px",
+          }}
+        />
 
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-slate-300">
-            Découvrez notre vision, notre approche et les principes qui
-            orientent notre engagement dans la réalisation de vos projets.
-          </p>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-48 -top-48 h-[650px] w-[650px] rounded-full border border-white/[0.08]"
+        />
 
-          <div className="mt-10">
-            <Link
-              href="/realisations"
-              className="inline-flex items-center rounded-md bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
-            >
-              Découvrir nos réalisations
-              <span className="ml-3" aria-hidden="true">
-                →
-              </span>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-20 top-20 h-[400px] w-[400px] rounded-full border border-[#D59344]/20"
+        />
+
+        <div className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 lg:px-10">
+
+          {/* Fil d'Ariane */}
+          <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
+            <Link href="/" className="transition-colors hover:text-[#D59344]">
+              Accueil
             </Link>
+
+            <span className="h-1 w-1 rounded-full bg-[#D59344]" />
+
+            <span className="text-[#D59344]">L'entreprise</span>
+          </div>
+
+          <div className="mt-20 grid gap-14 lg:grid-cols-[1fr_0.55fr] lg:items-end">
+
+            {/* Titre */}
+            <div>
+              <div className="flex items-center gap-4">
+                <span className="h-[2px] w-10 bg-[#D59344]" />
+
+                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#D59344]">
+                  À propos de BEREM
+                </span>
+              </div>
+
+              <h1 className="mt-8 max-w-5xl text-5xl font-black leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-[78px]">
+                Construire avec
+                <br />
+                <span className="text-[#D59344]">rigueur.</span>
+                <br />
+                Avancer avec confiance.
+              </h1>
+
+              <p className="mt-9 max-w-2xl text-base leading-8 text-white/60 sm:text-lg">
+                BEREM accompagne ses clients dans leurs projets de construction
+                et de travaux, avec une approche fondée sur l'écoute,
+                l'organisation et le suivi.
+              </p>
+            </div>
+
+            {/* Bloc latéral */}
+            <div className="relative border-l border-white/15 pl-7 lg:mb-3">
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
+                Notre philosophie
+              </span>
+
+              <p className="mt-6 text-2xl font-semibold leading-snug sm:text-3xl">
+                La qualité d'un projet commence par la qualité de son
+                accompagnement.
+              </p>
+
+              <Link
+                href="#presentation"
+                className="group mt-9 inline-flex items-center gap-3 text-sm font-bold text-[#D59344] transition-colors hover:text-white"
+              >
+                Découvrir BEREM
+
+                <ArrowDown
+                  size={17}
+                  className="transition-transform duration-300 group-hover:translate-y-1"
+                />
+              </Link>
+            </div>
+          </div>
+
+          {/* Signature */}
+          <div className="mt-24 flex items-center justify-between border-t border-white/15 pt-6">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-xs">
+              BEREM — Bâtiment & ingénierie
+            </span>
+
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-xs">
+              Notre entreprise
+            </span>
           </div>
         </div>
       </section>
 
-      {/* Présentation */}
-      <section className="px-6 py-20 md:py-28">
-        <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-2 md:items-center">
-          <div>
-            <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-orange-600">
-              Qui sommes-nous ?
-            </p>
 
-            <h2 className="text-3xl font-bold leading-tight md:text-4xl">
-              Une approche professionnelle au service de vos projets.
+      {/* =====================================================
+          PRÉSENTATION — QUI SOMMES-NOUS ?
+      ===================================================== */}
+      <section
+        id="presentation"
+        className="px-5 py-24 sm:px-8 sm:py-32 lg:px-10"
+      >
+        <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[0.85fr_1fr] lg:gap-24">
+
+          {/* Colonne gauche */}
+          <div>
+            <div className="flex items-center gap-4">
+              <span className="h-[2px] w-9 bg-[#D59344]" />
+
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#BE7D32]">
+                Qui sommes-nous ?
+              </p>
+            </div>
+
+            <h2 className="mt-7 max-w-xl text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl">
+              Une approche
+              <br />
+              <span className="text-[#D59344]">
+                pensée pour durer.
+              </span>
             </h2>
 
-            <p className="mt-6 leading-8 text-slate-600">
-              BEREM accompagne ses clients dans leurs projets de construction
-              et de travaux. Notre approche repose sur l'écoute des besoins,
-              la préparation des interventions et le suivi attentif de chaque
-              réalisation.
-            </p>
-
-            <p className="mt-4 leading-8 text-slate-600">
-              Nous cherchons à proposer des solutions adaptées aux objectifs,
-              aux contraintes et aux attentes de nos clients, avec une attention
-              constante portée à la qualité et au sérieux de l'exécution.
-            </p>
-          </div>
-
-          <div className="flex min-h-80 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 p-10">
-            <div className="max-w-sm text-center">
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-orange-500 text-3xl font-black text-white">
-                B
+            <div className="mt-10 flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#D59344]/40 text-[#BE7D32]">
+                <Building2 size={25} strokeWidth={1.4} />
               </div>
 
-              <h3 className="mt-6 text-2xl font-bold">BEREM</h3>
+              <div>
+                <p className="text-sm font-bold text-[#10161F]">
+                  BEREM
+                </p>
 
-              <p className="mt-3 leading-7 text-slate-600">
-                Une ambition : réaliser des projets avec méthode, exigence et
-                professionnalisme.
+                <p className="mt-1 text-xs text-[#647084]">
+                  Bâtiment & ingénierie
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Colonne droite */}
+          <div className="lg:pt-10">
+            <p className="text-lg font-medium leading-9 text-[#10161F] sm:text-xl sm:leading-10">
+              Chaque projet de construction ou de travaux répond à des besoins,
+              des objectifs et des contraintes qui lui sont propres.
+            </p>
+
+            <p className="mt-7 text-base leading-8 text-[#647084]">
+              BEREM accompagne ses clients dans leurs projets en accordant
+              une importance particulière à la compréhension de leurs besoins,
+              à la préparation des interventions et au suivi des réalisations.
+            </p>
+
+            <p className="mt-5 text-base leading-8 text-[#647084]">
+              Notre démarche consiste à rechercher des solutions adaptées
+              aux attentes de chaque client, tout en veillant à l'organisation
+              du travail, à la qualité de l'exécution et au sérieux de
+              l'accompagnement.
+            </p>
+
+            <div className="mt-10 border-l-2 border-[#D59344] py-2 pl-6">
+              <p className="text-base font-semibold leading-7 text-[#10161F]">
+                Comprendre le besoin. Organiser les interventions. Suivre
+                chaque réalisation.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Mission et vision */}
-      <section className="bg-slate-50 px-6 py-20 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2">
-          <article className="rounded-2xl border border-slate-200 bg-white p-8 md:p-10">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-600">
-              Notre mission
-            </p>
 
-            <h2 className="mt-4 text-2xl font-bold">
-              Donner vie aux projets.
-            </h2>
-
-            <p className="mt-5 leading-8 text-slate-600">
-              Comprendre les besoins de nos clients et contribuer à la
-              réalisation de leurs projets grâce à une organisation rigoureuse,
-              un accompagnement sérieux et une attention portée à la qualité.
-            </p>
-          </article>
-
-          <article className="rounded-2xl border border-slate-200 bg-white p-8 md:p-10">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-orange-600">
-              Notre vision
-            </p>
-
-            <h2 className="mt-4 text-2xl font-bold">
-              Bâtir une confiance durable.
-            </h2>
-
-            <p className="mt-5 leading-8 text-slate-600">
-              Développer des relations durables avec nos clients et partenaires
-              en faisant de la qualité, de la transparence et du
-              professionnalisme les fondements de notre travail.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      {/* Valeurs */}
-      <section className="px-6 py-20 md:py-28">
+      {/* =====================================================
+          MISSION & VISION
+      ===================================================== */}
+      <section className="bg-[#F3E9DC] px-5 py-24 sm:px-8 sm:py-28 lg:px-10">
         <div className="mx-auto max-w-7xl">
+
           <div className="max-w-2xl">
-            <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-orange-600">
-              Nos principes
-            </p>
+            <div className="flex items-center gap-4">
+              <span className="h-[2px] w-9 bg-[#D59344]" />
 
-            <h2 className="text-3xl font-bold md:text-4xl">
-              Les valeurs qui guident notre travail.
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#BE7D32]">
+                Notre raison d'être
+              </p>
+            </div>
+
+            <h2 className="mt-7 text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl">
+              Ce qui donne
+              <br />
+              <span className="text-[#BE7D32]">du sens à notre action.</span>
             </h2>
-
-            <p className="mt-5 leading-8 text-slate-600">
-              Ces principes constituent la base de notre approche et de la
-              relation que nous souhaitons construire avec chaque client.
-            </p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {values.map((value) => (
-              <article
-                key={value.number}
-                className="rounded-xl border border-slate-200 p-7 transition hover:-translate-y-1 hover:border-orange-300 hover:shadow-lg"
-              >
-                <span className="text-sm font-bold text-orange-600">
-                  {value.number}
+          <div className="mt-16 grid gap-0 border-t border-[#10161F]/15 md:grid-cols-2">
+
+            {/* Mission */}
+            <article className="border-b border-[#10161F]/15 py-12 md:border-b-0 md:border-r md:pr-14 lg:py-16">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#BE7D32]">
+                  Notre mission
                 </span>
 
-                <h3 className="mt-5 text-xl font-bold">{value.title}</h3>
+                <Target
+                  size={27}
+                  strokeWidth={1.4}
+                  className="text-[#BE7D32]"
+                />
+              </div>
 
-                <p className="mt-4 leading-7 text-slate-600">
-                  {value.description}
-                </p>
-              </article>
-            ))}
+              <h3 className="mt-9 max-w-md text-3xl font-black leading-tight sm:text-4xl">
+                Donner vie aux projets.
+              </h3>
+
+              <p className="mt-7 max-w-lg text-base leading-8 text-[#647084]">
+                Comprendre les besoins de nos clients et contribuer à la
+                réalisation de leurs projets grâce à une organisation
+                rigoureuse, un accompagnement sérieux et une attention
+                constante portée à la qualité.
+              </p>
+            </article>
+
+            {/* Vision */}
+            <article className="py-12 md:pl-14 lg:py-16">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#BE7D32]">
+                  Notre vision
+                </span>
+
+                <Eye
+                  size={27}
+                  strokeWidth={1.4}
+                  className="text-[#BE7D32]"
+                />
+              </div>
+
+              <h3 className="mt-9 max-w-md text-3xl font-black leading-tight sm:text-4xl">
+                Bâtir une confiance durable.
+              </h3>
+
+              <p className="mt-7 max-w-lg text-base leading-8 text-[#647084]">
+                Développer des relations durables avec nos clients et
+                partenaires en faisant de la qualité, de la transparence
+                et du professionnalisme les fondements de notre travail.
+              </p>
+            </article>
           </div>
         </div>
       </section>
 
-      {/* Appel à l'action */}
-      <section className="bg-orange-500 px-6 py-16 text-white md:py-20">
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-3xl font-bold md:text-4xl">
-              Parlons de votre projet.
-            </h2>
 
-            <p className="mt-4 max-w-2xl leading-7 text-orange-50">
-              Vous avez un projet de construction ou de travaux ? Présentez-nous
-              votre besoin pour que nous puissions en discuter.
+      {/* =====================================================
+          VALEURS — NOS PRINCIPES
+      ===================================================== */}
+      <section className="px-5 py-24 sm:px-8 sm:py-32 lg:px-10">
+        <div className="mx-auto max-w-7xl">
+
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end">
+            <div>
+              <div className="flex items-center gap-4">
+                <span className="h-[2px] w-9 bg-[#D59344]" />
+
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#BE7D32]">
+                  Nos principes
+                </p>
+              </div>
+
+              <h2 className="mt-7 max-w-xl text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl">
+                Les valeurs qui
+                <br />
+                <span className="text-[#D59344]">
+                  guident notre travail.
+                </span>
+              </h2>
+            </div>
+
+            <p className="max-w-xl text-base leading-8 text-[#647084] lg:justify-self-end">
+              Nos valeurs traduisent notre manière de travailler et la relation
+              que nous souhaitons construire avec chaque client et partenaire.
             </p>
+          </div>
+
+          <div className="mt-16 border-t border-[#EAE1D7]">
+            {values.map((value) => {
+              const Icon = value.icon;
+
+              return (
+                <article
+                  key={value.number}
+                  className="group grid gap-6 border-b border-[#EAE1D7] py-9 transition-colors duration-300 hover:bg-white/60 sm:grid-cols-[80px_1fr_1fr] sm:items-center sm:gap-10 sm:py-11"
+                >
+                  <span className="text-3xl font-black tracking-tight text-[#D59344]">
+                    {value.number}
+                  </span>
+
+                  <div className="flex items-center gap-5">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#D59344]/30 text-[#BE7D32] transition-all duration-300 group-hover:border-[#D59344] group-hover:bg-[#D59344] group-hover:text-[#10161F]">
+                      <Icon size={22} strokeWidth={1.5} />
+                    </div>
+
+                    <h3 className="text-2xl font-black text-[#10161F] transition-colors group-hover:text-[#BE7D32]">
+                      {value.title}
+                    </h3>
+                  </div>
+
+                  <p className="max-w-lg text-sm leading-7 text-[#647084] sm:text-base">
+                    {value.description}
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+
+      {/* =====================================================
+          CONCLUSION — RÉALISATIONS
+      ===================================================== */}
+      <section className="relative overflow-hidden bg-[#10161F] px-5 py-20 text-white sm:px-8 sm:py-24 lg:px-10">
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-32 -top-40 h-[500px] w-[500px] rounded-full border border-white/[0.08]"
+        />
+
+        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <div className="flex items-center gap-4">
+              <span className="h-[2px] w-9 bg-[#D59344]" />
+
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#D59344]">
+                BEREM en action
+              </p>
+            </div>
+
+            <h2 className="mt-7 max-w-3xl text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
+              Découvrez comment notre approche
+              <span className="text-[#D59344]"> prend forme sur le terrain.</span>
+            </h2>
           </div>
 
           <Link
-            href="/devis"
-            className="inline-flex shrink-0 items-center justify-center rounded-md bg-slate-950 px-7 py-4 font-semibold text-white transition hover:bg-slate-800"
+            href="/realisations"
+            className="group inline-flex w-fit items-center gap-5 border border-white/25 px-7 py-5 text-sm font-bold text-white transition-all duration-300 hover:border-[#D59344] hover:bg-[#D59344] hover:text-[#10161F]"
           >
-            Demander un devis
-            <span className="ml-3" aria-hidden="true">
-              →
-            </span>
+            Découvrir nos réalisations
+
+            <ArrowUpRight
+              size={19}
+              className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
+            />
           </Link>
         </div>
       </section>
+
     </main>
   );
 }

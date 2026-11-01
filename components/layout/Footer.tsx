@@ -113,9 +113,14 @@ export default function Footer() {
   const activeSocialLinks = socialLinks.filter((social) => social.href.trim());
 
   return (
-    <footer className="relative isolate overflow-hidden bg-[#10161F] text-white">
+    <footer className="relative isolate overflow-hidden border-t border-[#D59344]/50 bg-[#10161F] text-white">
 
       <FoundationIllustration />
+      {/* Transition visuelle vers le pied de page */}
+<div
+  aria-hidden="true"
+  className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#D59344]/[0.07] via-[#10161F]/40 to-transparent"
+/>
 
       {/* Motif architectural discret */}
       <div
@@ -127,6 +132,13 @@ export default function Footer() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-16">
 
+{/* Repère d'entrée du footer */}
+<div className="mb-10 flex items-center gap-4 border-t border-white/10 pt-5 sm:mb-12">
+  <span className="h-[3px] w-12 bg-[#D59344]" />
+  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
+    BEREM — Génie civil & construction
+  </span>
+</div>
         {/* CONTENU PRINCIPAL */}
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_0.9fr_1.15fr] lg:gap-12">
 
@@ -327,14 +339,16 @@ export default function Footer() {
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             <Link
-              href="/mentions-legales"
+              href="#"
+              // href="/mentions-legales"
               className="text-xs text-white/45 transition-colors hover:text-[#D59344]"
             >
               Mentions légales
             </Link>
 
             <Link
-              href="/politique-confidentialite"
+              href="#"
+              // href="/politique-confidentialite"
               className="text-xs text-white/45 transition-colors hover:text-[#D59344]"
             >
               Confidentialité

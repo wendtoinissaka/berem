@@ -20,16 +20,18 @@ export default async function EditSolutionPage({ params }: Props) {
 
   const { id } = await params;
 
-  const solution = await prisma.solution.findUnique({
-    where: { id },
-    include: {
-      features: {
-        orderBy: {
-          sortOrder: "asc",
-        },
-      },
+  
+const solution = await prisma.solution.findUnique({
+  where: { id },
+  include: {
+    features: {
+      orderBy: { sortOrder: "asc" },
     },
-  });
+    media: {
+      orderBy: { sortOrder: "asc" },
+    },
+  },
+});
 
   if (!solution) {
     notFound();
@@ -51,6 +53,15 @@ export default async function EditSolutionPage({ params }: Props) {
       title: feature.title,
       description: feature.description ?? "",
     })),
+    media: solution.media.map((item) => ({
+  id: item.id,
+  url: item.url,
+  publicId: item.publicId,
+  type: item.type,
+  caption: item.caption,
+})),
+
+    
   };
 
   return (

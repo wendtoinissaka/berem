@@ -160,3 +160,968 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ========================================
+   BEREM — HERO EXPERIENCE
+   ======================================== */
+
+.berem-hero {
+  isolation: isolate;
+}
+
+/* Image immersive */
+.berem-hero__image {
+  background-position: center 48%;
+  background-size: cover;
+  transform: scale(1.04);
+  animation: beremHeroImage 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.berem-hero:hover .berem-hero__image {
+  transform: scale(1.075);
+}
+
+/* Apparition progressive */
+@keyframes beremHeroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.berem-hero-reveal {
+  opacity: 0;
+  animation: beremHeroReveal 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.berem-hero-delay-1 {
+  animation-delay: 0.15s;
+}
+
+.berem-hero-delay-2 {
+  animation-delay: 0.3s;
+}
+
+.berem-hero-delay-3 {
+  animation-delay: 0.45s;
+}
+
+/* Image : apparition douce */
+@keyframes beremHeroImage {
+  from {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* Accent typographique */
+.berem-hero-title-accent {
+  color: var(--brand-orange);
+  -webkit-text-stroke: 1px transparent;
+  text-shadow: 0 8px 40px rgba(213, 147, 68, 0.12);
+}
+
+/* Indicateur de défilement */
+.berem-scroll-indicator {
+  animation: beremScrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes beremScrollPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  50% {
+    transform: translateY(5px);
+    border-color: rgba(213, 147, 68, 0.9);
+  }
+}
+
+/* Adaptation mobile */
+@media (max-width: 640px) {
+  .berem-hero__image {
+    background-position: 58% center;
+  }
+
+  .berem-hero:hover .berem-hero__image {
+    transform: scale(1.04);
+  }
+}
+
+/* Respect des préférences d'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  .berem-hero__image,
+  .berem-hero-reveal,
+  .berem-scroll-indicator {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+
+
+
+
+
+
+
+
+/* =====================================================
+   BEREM — IMMERSIVE HERO EXPERIENCE
+   ===================================================== */
+
+.berem-hero {
+  --pointer-x: 70%;
+  --pointer-y: 40%;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+
+  isolation: isolate;
+  perspective: 1200px;
+  background: #10161f;
+}
+
+/* IMAGE */
+
+.berem-hero__visual {
+  transform-style: preserve-3d;
+}
+
+.berem-hero__image {
+  background-size: cover;
+  background-position: center 48%;
+  transform: scale(1.12);
+  animation: berem-image-enter 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+.berem-hero:hover .berem-hero__image {
+  transform:
+    scale(1.15)
+    translate3d(
+      calc(var(--rotate-y) * -1),
+      calc(var(--rotate-x) * -1),
+      0
+    );
+}
+
+@keyframes berem-image-enter {
+  from {
+    opacity: 0.4;
+    transform: scale(1.22);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+
+/* SPOTLIGHT INTERACTIF */
+
+.berem-hero__spotlight {
+  position: absolute;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+
+  background: radial-gradient(
+    600px circle at var(--pointer-x) var(--pointer-y),
+    rgba(213, 147, 68, 0.12),
+    transparent 65%
+  );
+
+  opacity: 0.9;
+  transition: opacity 0.4s ease;
+}
+
+/* GRAIN CINÉMATOGRAPHIQUE */
+
+.berem-hero__noise {
+  position: absolute;
+  inset: 0;
+  z-index: -9;
+  pointer-events: none;
+  opacity: 0.055;
+
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+}
+
+/* GRILLE ARCHITECTURALE */
+
+.berem-hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: -8;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding-inline: 8.33%;
+}
+
+.berem-hero__grid span {
+  border-left: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.berem-hero__grid span:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.berem-hero__grid::after {
+  content: "";
+  position: absolute;
+  top: 18%;
+  left: 8.33%;
+  right: 8.33%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+/* ÉLÉMENTS TECHNIQUES */
+
+.berem-hero__technical {
+  position: absolute;
+  inset: 0;
+  z-index: -5;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.berem-hero__technical-circle {
+  position: absolute;
+  top: 14%;
+  right: 10%;
+  width: clamp(260px, 34vw, 520px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(213, 147, 68, 0.16);
+  border-radius: 50%;
+  animation: berem-orbit 40s linear infinite;
+}
+
+.berem-hero__technical-circle::before,
+.berem-hero__technical-circle::after {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.berem-hero__technical-circle::after {
+  inset: 28%;
+  border-style: dashed;
+}
+
+.berem-hero__technical-circle span {
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d59344;
+  box-shadow: 0 0 20px rgba(213, 147, 68, 0.7);
+}
+
+.berem-hero__technical-circle span:nth-child(2) {
+  top: 15%;
+  left: 80%;
+  width: 5px;
+  height: 5px;
+}
+
+.berem-hero__technical-circle span:nth-child(3) {
+  top: 83%;
+  left: 25%;
+  width: 5px;
+  height: 5px;
+}
+
+@keyframes berem-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.berem-hero__technical-cross {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  opacity: 0.5;
+}
+
+.berem-hero__technical-cross::before,
+.berem-hero__technical-cross::after {
+  content: "";
+  position: absolute;
+  background: #d59344;
+}
+
+.berem-hero__technical-cross::before {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+
+.berem-hero__technical-cross::after {
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+}
+
+.berem-cross-one {
+  top: 30%;
+  right: 14%;
+}
+
+.berem-cross-two {
+  bottom: 23%;
+  right: 34%;
+}
+
+/* EYEBROW */
+
+.berem-hero__intro {
+  opacity: 0;
+  animation: berem-reveal 0.9s 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.berem-hero__eyebrow-line {
+  display: block;
+  width: 0;
+  height: 2px;
+  background: #d59344;
+  animation: berem-line-grow 1s 0.6s ease forwards;
+}
+
+.berem-hero__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d59344;
+  box-shadow: 0 0 14px rgba(213, 147, 68, 0.8);
+  animation: berem-dot-pulse 2s infinite;
+}
+
+@keyframes berem-line-grow {
+  to {
+    width: 40px;
+  }
+}
+
+@keyframes berem-dot-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 14px rgba(213, 147, 68, 0.8);
+  }
+
+  50% {
+    opacity: 0.5;
+    box-shadow: 0 0 4px rgba(213, 147, 68, 0.3);
+  }
+}
+
+/* TITRE ANIMÉ */
+
+.berem-hero__title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  font-size: clamp(4rem, 10.2vw, 9.8rem);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.085em;
+  text-transform: uppercase;
+}
+
+.berem-title-line {
+  display: block;
+  overflow: hidden;
+  padding-right: 0.1em;
+  padding-bottom: 0.12em;
+}
+
+.berem-title-line > span:first-child {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(110%);
+  animation: berem-title-enter 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.berem-title-line:nth-child(1) > span:first-child {
+  animation-delay: 0.45s;
+}
+
+.berem-title-line:nth-child(2) > span:first-child {
+  animation-delay: 0.62s;
+}
+
+.berem-title-line:nth-child(3) > span:first-child {
+  animation-delay: 0.79s;
+}
+
+.berem-title-line--accent {
+  color: #d59344;
+}
+
+.berem-title-period {
+  color: #d59344;
+}
+
+@keyframes berem-title-enter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* DESCRIPTION */
+
+.berem-hero__description {
+  opacity: 0;
+  transform: translateY(25px);
+  animation: berem-reveal 1s 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ACTIONS */
+
+.berem-hero__actions {
+  opacity: 0;
+  transform: translateY(25px);
+  animation: berem-reveal 1s 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes berem-reveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* BOUTONS INTERACTIFS */
+
+.berem-button {
+  position: relative;
+  display: inline-flex;
+  min-height: 60px;
+  min-width: 235px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 0 24px;
+  overflow: hidden;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  transition:
+    color 0.35s ease,
+    background 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.35s ease;
+}
+
+.berem-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-105%);
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.berem-button:hover::before {
+  transform: translateX(0);
+}
+
+.berem-button > span {
+  position: relative;
+  z-index: 1;
+}
+
+.berem-button--primary {
+  color: #10161f;
+  background: #d59344;
+  border: 1px solid #d59344;
+}
+
+.berem-button--primary::before {
+  background: #fff;
+}
+
+.berem-button--primary:hover {
+  box-shadow: 0 12px 35px rgba(213, 147, 68, 0.2);
+  transform: translateY(-4px);
+}
+
+.berem-button--secondary {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(10px);
+}
+
+.berem-button--secondary::before {
+  background: #fff;
+}
+
+.berem-button--secondary:hover {
+  color: #10161f;
+  border-color: #fff;
+  transform: translateY(-4px);
+}
+
+.berem-button__icon {
+  font-size: 21px;
+  transition: transform 0.35s ease;
+}
+
+.berem-button:hover .berem-button__icon {
+  transform: translate(4px, -3px);
+}
+
+/* COORDONNÉES */
+
+.berem-hero__coordinates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  animation: berem-reveal 1s 1.7s ease forwards;
+}
+
+.berem-hero__coordinates span {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.berem-coordinate-line {
+  width: 100%;
+  height: 1px;
+  margin-top: 5px;
+  background: linear-gradient(90deg, transparent, #d59344);
+}
+
+/* SCROLL */
+
+.berem-hero__scroll {
+  opacity: 0;
+  animation: berem-reveal 1s 1.7s ease forwards;
+}
+
+.berem-scroll-circle {
+  display: flex;
+  width: 34px;
+  height: 48px;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  transition: border-color 0.3s ease;
+}
+
+.berem-scroll-circle span {
+  display: block;
+  width: 3px;
+  height: 8px;
+  border-radius: 5px;
+  background: #d59344;
+  animation: berem-scroll 1.8s infinite;
+}
+
+.berem-hero__scroll:hover .berem-scroll-circle {
+  border-color: #d59344;
+}
+
+@keyframes berem-scroll {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+}
+
+/* PROGRESSION */
+
+.berem-hero__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.berem-hero__progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: #d59344;
+  animation: berem-progress 2s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes berem-progress {
+  to {
+    width: 100%;
+  }
+}
+
+/* INDEX LATÉRAL */
+
+.berem-hero__side-index {
+  position: absolute;
+  right: 30px;
+  bottom: 50%;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.berem-hero__side-index span:nth-child(2) {
+  width: 1px;
+  height: 40px;
+  background: #d59344;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1023px) {
+  .berem-hero__technical-circle {
+    right: -15%;
+    top: 15%;
+    opacity: 0.5;
+  }
+
+  .berem-hero__spotlight {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .berem-hero {
+    min-height: 780px;
+  }
+
+  .berem-hero__image {
+    background-position: 60% center;
+    transform: scale(1.08);
+  }
+
+  .berem-hero__title {
+    font-size: clamp(3.7rem, 16vw, 6rem);
+    letter-spacing: -0.08em;
+  }
+
+  .berem-title-line {
+    padding-bottom: 0.16em;
+  }
+
+  .berem-hero__technical-circle {
+    top: 10%;
+    right: -48%;
+    width: 340px;
+    opacity: 0.35;
+  }
+
+  .berem-hero__grid {
+    padding-inline: 5%;
+  }
+
+  .berem-hero__actions {
+    width: 100%;
+  }
+
+  .berem-button {
+    width: 100%;
+    min-height: 56px;
+  }
+}
+
+/* ACCESSIBILITÉ */
+
+@media (prefers-reduced-motion: reduce) {
+  .berem-hero *,
+  .berem-hero *::before,
+  .berem-hero *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .berem-hero__image {
+    transform: none !important;
+  }
+
+  .berem-title-line > span:first-child {
+    opacity: 1;
+    transform: none;
+  }
+
+  .berem-hero__intro,
+  .berem-hero__description,
+  .berem-hero__actions,
+  .berem-hero__scroll,
+  .berem-hero__coordinates {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+
+  @keyframes carousel-progress {
+    from {
+      stroke-dashoffset: 119.38;
+    }
+
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+
+  /* ========================================
+   BEREM — COMPTE À REBOURS CIRCULAIRE
+   ======================================== */
+
+.berem-carousel-ring {
+  transform: rotate(-90deg);
+  transform-origin: 24px 24px;
+
+  stroke-dasharray: 131.95;
+  stroke-dashoffset: 131.95;
+
+  animation: berem-carousel-progress 6000ms linear forwards;
+}
+
+@keyframes berem-carousel-progress {
+  from {
+    stroke-dashoffset: 131.95;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* =====================================================
+   BEREM — SIGNATURE INTERACTIVE BUTTON SYSTEM
+   ===================================================== */
+
+.berem-btn {
+  --btn-bg: #d59344;
+  --btn-color: #10161f;
+  --btn-border: #d59344;
+  --btn-shadow: rgba(213, 147, 68, 0.28);
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+
+  padding: 0 8px 0 24px;
+  overflow: hidden;
+
+  border: 1px solid var(--btn-border);
+  background: var(--btn-bg);
+  color: var(--btn-color);
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.045em;
+
+  transition:
+    transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 450ms ease,
+    border-color 350ms ease,
+    color 350ms ease,
+    background 350ms ease;
+}
+
+/* Contenu */
+
+.berem-btn__content,
+.berem-btn__icon {
+  position: relative;
+  z-index: 2;
+}
+
+/* Icône */
+
+.berem-btn__icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  place-items: center;
+
+  background: rgba(16, 22, 31, 0.09);
+
+  transition:
+    transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    background 350ms ease,
+    color 350ms ease;
+}
+
+/* Balayage lumineux */
+
+.berem-btn__shine {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.4) 48%,
+    transparent 75%
+  );
+
+  transform: translateX(-130%);
+  transition: transform 750ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  pointer-events: none;
+}
+
+/* Interaction */
+
+.berem-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 35px var(--btn-shadow);
+}
+
+.berem-btn:hover .berem-btn__shine {
+  transform: translateX(130%);
+}
+
+.berem-btn:hover .berem-btn__icon {
+  transform: translate(2px, -2px);
+}
+
+.berem-btn:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 5px 14px var(--btn-shadow);
+}
+
+/* PRIMARY */
+
+.berem-btn--primary {
+  --btn-bg: #d59344;
+  --btn-color: #10161f;
+  --btn-border: #d59344;
+  --btn-shadow: rgba(213, 147, 68, 0.32);
+}
+
+.berem-btn--primary:hover .berem-btn__icon {
+  background: #10161f;
+  color: #ffffff;
+}
+
+/* SECONDARY */
+
+.berem-btn--secondary {
+  --btn-bg: rgba(255, 255, 255, 0.035);
+  --btn-color: #ffffff;
+  --btn-border: rgba(255, 255, 255, 0.38);
+  --btn-shadow: rgba(255, 255, 255, 0.1);
+
+  backdrop-filter: blur(12px);
+}
+
+.berem-btn--secondary .berem-btn__icon {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.berem-btn--secondary:hover {
+  --btn-bg: #ffffff;
+  --btn-color: #10161f;
+  --btn-border: #ffffff;
+}
+
+.berem-btn--secondary:hover .berem-btn__icon {
+  background: #d59344;
+}
+
+/* DARK */
+
+.berem-btn--dark {
+  --btn-bg: #10161f;
+  --btn-color: #ffffff;
+  --btn-border: #10161f;
+  --btn-shadow: rgba(16, 22, 31, 0.2);
+}
+
+.berem-btn--dark .berem-btn__icon {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.berem-btn--dark:hover .berem-btn__icon {
+  background: #d59344;
+  color: #10161f;
+}
+
+/* Accessibilité */
+
+.berem-btn:focus-visible {
+  outline: 3px solid #d59344;
+  outline-offset: 5px;
+}
+
+@media (max-width: 640px) {
+  .berem-btn {
+    width: 100%;
+    min-height: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .berem-btn,
+  .berem-btn *,
+  .berem-btn::before {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .berem-btn__shine {
+    display: none;
+  }
+}
+

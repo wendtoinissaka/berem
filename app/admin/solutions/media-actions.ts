@@ -6,14 +6,149 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { cloudinary } from "@/lib/cloudinary";
 
-function readText(formData: FormData, name: string) {
-  return String(formData.get(name) ?? "").trim();
+type MediaCategory = "galerie" | "logo" | "couverture";
+type CloudinaryResourceType = "image" | "video";
+
+const MAX_CAPTION_LENGTH = 250;
+
+function readText(formData: FormData, name: string): string {
+  const value = formData.get(name);
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function assertCategory(value: string): asserts value is MediaCategory {
+  if (!["galerie", "logo", "couverture"].includes(value)) {
+    throw new Error("Catégorie de média non autorisée.");
+  }
+}
+
+function assertResourceType(
+  value: string,
+): asserts value is CloudinaryResourceType {
+  if (value !== "image" && value !== "video") {
+    throw new Error("Type de média non autorisé.");
+  }
+}
+
+function validateCloudinaryUrl(url: string) {
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    throw new Error("URL du média invalide.");
+  }
+
+  const config = cloudinary.config();
+
+  if (
+    parsedUrl.protocol !== "https:" ||
+    parsedUrl.hostname !== "res.cloudinary.com" ||
+    !config.cloud_name ||
+    !parsedUrl.pathname.startsWith(`/${config.cloud_name}/`)
+  ) {
+    throw new Error("URL Cloudinary non autorisée.");
+  }
+
+  return parsedUrl;
+}
+
+function validatePublicId(
+  publicId: string,
+  solutionId: string,
+  category: MediaCategory,
+) {
+  const expectedPrefix = `berem/solutions/${solutionId}/${category}/`;
+
+  if (
+    !publicId ||
+    publicId.length > 500 ||
+    !publicId.startsWith(expectedPrefix)
+  ) {
+    throw new Error("Ce fichier ne correspond pas à cette solution.");
+  }
+}
+
+/**
+ * Vérifie que le fichier existe réellement sur Cloudinary
+ * et qu'il appartient bien au dossier attendu.
+ */
+async function verifyCloudinaryAsset({
+  solutionId,
+  category,
+  url,
+  publicId,
+  resourceType,
+}: {
+  solutionId: string;
+  category: MediaCategory;
+  url: string;
+  publicId: string;
+  resourceType: CloudinaryResourceType;
+}) {
+  validatePublicId(publicId, solutionId, category);
+  validateCloudinaryUrl(url);
+
+  const asset = await cloudinary.api.resource(publicId, {
+    resource_type: resourceType,
+  });
+
+  if (
+    asset.secure_url !== url ||
+    asset.public_id !== publicId ||
+    asset.resource_type !== resourceType
+  ) {
+    throw new Error("Le fichier Cloudinary n'a pas pu être vérifié.");
+  }
+
+  return asset;
+}
+
+/**
+ * Supprime un ancien fichier Cloudinary.
+ * Une erreur de suppression ne doit jamais annuler
+ * l'enregistrement du nouveau fichier en base.
+ */
+async function destroyCloudinaryAsset(
+  publicId: string | null,
+  resourceType: CloudinaryResourceType,
+) {
+  if (!publicId) return;
+
+  try {
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
+      invalidate: true,
+    });
+
+    if (result.result !== "ok" && result.result !== "not found") {
+      console.error(
+        `[Cloudinary] Suppression non confirmée pour ${publicId}:`,
+        result,
+      );
+    }
+  } catch (error) {
+    console.error(
+      `[Cloudinary] Impossible de supprimer ${publicId}:`,
+      error,
+    );
+  }
+}
+
+function refreshSolutionPages(slug?: string) {
+  revalidatePath("/admin/solutions");
+  revalidatePath("/solutions");
+  revalidatePath("/");
+
+  if (slug) {
+    revalidatePath(`/solutions/${slug}`);
+  }
 }
 
 /**
  * Prépare un brouillon technique si nécessaire.
  * Ce brouillon permet d'envoyer les médias avant la validation
- * finale du formulaire, sans rediriger l'administrateur.
+ * finale du formulaire.
  */
 export async function ensureSolutionDraft(formData: FormData) {
   await requireAdmin();
@@ -23,7 +158,7 @@ export async function ensureSolutionDraft(formData: FormData) {
   if (existingId) {
     const existing = await prisma.solution.findUnique({
       where: { id: existingId },
-      select: { id: true, status: true },
+      select: { id: true },
     });
 
     if (!existing) {
@@ -37,13 +172,14 @@ export async function ensureSolutionDraft(formData: FormData) {
   const summary =
     readText(formData, "summary") || "Solution en cours de création";
   const description =
-    readText(formData, "description") || "Description en cours de rédaction";
+    readText(formData, "description") ||
+    "Description en cours de rédaction";
 
   const solution = await prisma.solution.create({
     data: {
-      name,
+      name: name.slice(0, 150),
       slug: `brouillon-${crypto.randomUUID()}`,
-      summary,
+      summary: summary.slice(0, 300),
       description,
       status: "DRAFT",
       isFeatured: false,
@@ -55,11 +191,10 @@ export async function ensureSolutionDraft(formData: FormData) {
 }
 
 /**
- * Génère une signature pour les fichiers d'une solution.
- * Les fichiers sont stockés dans un dossier distinct.
+ * Génère une signature Cloudinary.
  */
 export async function createSolutionMediaUploadSignature(
-  formData: FormData
+  formData: FormData,
 ) {
   await requireAdmin();
 
@@ -70,9 +205,7 @@ export async function createSolutionMediaUploadSignature(
     throw new Error("Identifiant de solution manquant.");
   }
 
-  if (!["galerie", "logo", "couverture"].includes(category)) {
-    throw new Error("Catégorie de média non autorisée.");
-  }
+  assertCategory(category);
 
   const solution = await prisma.solution.findUnique({
     where: { id: solutionId },
@@ -94,7 +227,7 @@ export async function createSolutionMediaUploadSignature(
 
   const signature = cloudinary.utils.api_sign_request(
     { timestamp, folder },
-    config.api_secret
+    config.api_secret,
   );
 
   return {
@@ -107,7 +240,7 @@ export async function createSolutionMediaUploadSignature(
 }
 
 /**
- * Vérifie le média sur Cloudinary puis l'enregistre en base.
+ * Enregistre une photo ou vidéo de galerie.
  */
 export async function saveUploadedSolutionMedia(formData: FormData) {
   await requireAdmin();
@@ -122,29 +255,10 @@ export async function saveUploadedSolutionMedia(formData: FormData) {
     throw new Error("Informations du média incomplètes.");
   }
 
-  if (!["image", "video"].includes(resourceType)) {
-    throw new Error("Type de média non autorisé.");
-  }
+  assertResourceType(resourceType);
 
-  const expectedPrefix = `berem/solutions/${solutionId}/galerie/`;
-
-  if (!publicId.startsWith(expectedPrefix)) {
-    throw new Error("Ce fichier ne correspond pas à cette solution.");
-  }
-
-  let parsedUrl: URL;
-
-  try {
-    parsedUrl = new URL(url);
-  } catch {
-    throw new Error("URL du média invalide.");
-  }
-
-  if (
-    parsedUrl.protocol !== "https:" ||
-    parsedUrl.hostname !== "res.cloudinary.com"
-  ) {
-    throw new Error("Domaine du média non autorisé.");
+  if (caption.length > MAX_CAPTION_LENGTH) {
+    throw new Error("La légende ne doit pas dépasser 250 caractères.");
   }
 
   const solution = await prisma.solution.findUnique({
@@ -156,17 +270,13 @@ export async function saveUploadedSolutionMedia(formData: FormData) {
     throw new Error("Solution introuvable.");
   }
 
-  const asset = await cloudinary.api.resource(publicId, {
-    resource_type: resourceType,
+  await verifyCloudinaryAsset({
+    solutionId,
+    category: "galerie",
+    url,
+    publicId,
+    resourceType,
   });
-
-  if (
-    asset.secure_url !== url ||
-    asset.public_id !== publicId ||
-    asset.resource_type !== resourceType
-  ) {
-    throw new Error("Le fichier Cloudinary n'a pas pu être vérifié.");
-  }
 
   const lastMedia = await prisma.solutionMedia.findFirst({
     where: { solutionId },
@@ -178,6 +288,7 @@ export async function saveUploadedSolutionMedia(formData: FormData) {
     data: {
       solutionId,
       url,
+      publicId,
       type: resourceType === "video" ? MediaType.VIDEO : MediaType.IMAGE,
       caption: caption || null,
       sortOrder: (lastMedia?.sortOrder ?? -1) + 1,
@@ -185,18 +296,66 @@ export async function saveUploadedSolutionMedia(formData: FormData) {
     select: { id: true },
   });
 
-  revalidatePath("/admin/solutions");
-  revalidatePath("/solutions");
-  revalidatePath(`/solutions/${solution.slug}`);
-  revalidatePath("/");
+  refreshSolutionPages(solution.slug);
 
   return { mediaId: media.id };
 }
 
+/**
+ * Supprime un média de galerie.
+ * La vérification de l'appartenance empêche de supprimer
+ * un média appartenant à une autre solution.
+ */
+export async function deleteSolutionMedia(formData: FormData) {
+  await requireAdmin();
 
+  const solutionId = readText(formData, "solutionId");
+  const mediaId = readText(formData, "mediaId");
 
+  if (!solutionId || !mediaId) {
+    throw new Error("Informations de suppression incomplètes.");
+  }
+
+  const media = await prisma.solutionMedia.findFirst({
+    where: {
+      id: mediaId,
+      solutionId,
+    },
+    include: {
+      solution: {
+        select: { slug: true },
+      },
+    },
+  });
+
+  if (!media) {
+    throw new Error("Média introuvable pour cette solution.");
+  }
+
+  // On retire d'abord la référence en base.
+  // En cas d'échec Cloudinary, le fichier devient simplement
+  // un fichier orphelin, sans casser la galerie publique.
+  await prisma.solutionMedia.delete({
+    where: { id: media.id },
+  });
+
+  if (media.publicId) {
+    await destroyCloudinaryAsset(
+      media.publicId,
+      media.type === MediaType.VIDEO ? "video" : "image",
+    );
+  }
+
+  refreshSolutionPages(media.solution.slug);
+
+  return { success: true };
+}
+
+/**
+ * Enregistre ou remplace le logo ou la couverture.
+ */
 export async function saveUploadedSolutionBrandImage(
-  formData: FormData
+  formData: FormData,
 ) {
   await requireAdmin();
 
@@ -209,66 +368,123 @@ export async function saveUploadedSolutionBrandImage(
     throw new Error("Informations de l'image incomplètes.");
   }
 
-  if (!["logo", "couverture"].includes(category)) {
-    throw new Error("Type d'image non autorisé.");
-  }
+  assertCategory(category);
 
-  const expectedPrefix =
-    `berem/solutions/${solutionId}/${category}/`;
-
-  if (!publicId.startsWith(expectedPrefix)) {
-    throw new Error("Cette image ne correspond pas à cette solution.");
-  }
-
-  let parsedUrl: URL;
-
-  try {
-    parsedUrl = new URL(url);
-  } catch {
-    throw new Error("URL de l'image invalide.");
-  }
-
-  if (
-    parsedUrl.protocol !== "https:" ||
-    parsedUrl.hostname !== "res.cloudinary.com"
-  ) {
-    throw new Error("Domaine de l'image non autorisé.");
+  if (category === "galerie") {
+    throw new Error("Cette catégorie ne correspond pas à une image d'identité.");
   }
 
   const solution = await prisma.solution.findUnique({
     where: { id: solutionId },
-    select: { id: true, slug: true },
+    select: {
+      id: true,
+      slug: true,
+      logoPublicId: true,
+      coverPublicId: true,
+    },
   });
 
   if (!solution) {
     throw new Error("Solution introuvable.");
   }
 
-  const asset = await cloudinary.api.resource(publicId, {
-    resource_type: "image",
+  await verifyCloudinaryAsset({
+    solutionId,
+    category,
+    url,
+    publicId,
+    resourceType: "image",
   });
 
-  if (
-    asset.secure_url !== url ||
-    asset.public_id !== publicId ||
-    asset.resource_type !== "image"
-  ) {
-    throw new Error("L'image Cloudinary n'a pas pu être vérifiée.");
+  const oldPublicId =
+    category === "logo"
+      ? solution.logoPublicId
+      : solution.coverPublicId;
+
+  if (oldPublicId === publicId) {
+    return { url };
   }
 
-  const field = category === "logo" ? "logoUrl" : "coverImageUrl";
+  if (category === "logo") {
+    await prisma.solution.update({
+      where: { id: solutionId },
+      data: {
+        logoUrl: url,
+        logoPublicId: publicId,
+      },
+    });
+  } else {
+    await prisma.solution.update({
+      where: { id: solutionId },
+      data: {
+        coverImageUrl: url,
+        coverPublicId: publicId,
+      },
+    });
+  }
 
-  await prisma.solution.update({
+  // L'ancien fichier n'est supprimé qu'après la mise à jour en base.
+  await destroyCloudinaryAsset(oldPublicId, "image");
+
+  refreshSolutionPages(solution.slug);
+
+  return { url };
+}
+
+/**
+ * Retire le logo ou la couverture sans supprimer l'autre image.
+ */
+export async function deleteSolutionBrandImage(formData: FormData) {
+  await requireAdmin();
+
+  const solutionId = readText(formData, "solutionId");
+  const category = readText(formData, "category");
+
+  if (!solutionId) {
+    throw new Error("Identifiant de solution manquant.");
+  }
+
+  if (category !== "logo" && category !== "couverture") {
+    throw new Error("Type d'image non autorisé.");
+  }
+
+  const solution = await prisma.solution.findUnique({
     where: { id: solutionId },
-    data: {
-      [field]: url,
+    select: {
+      id: true,
+      slug: true,
+      logoPublicId: true,
+      coverPublicId: true,
     },
   });
 
-  revalidatePath("/admin/solutions");
-  revalidatePath("/solutions");
-  revalidatePath(`/solutions/${solution.slug}`);
-  revalidatePath("/");
+  if (!solution) {
+    throw new Error("Solution introuvable.");
+  }
 
-  return { url };
+  if (category === "logo") {
+    await prisma.solution.update({
+      where: { id: solutionId },
+      data: {
+        logoUrl: null,
+        logoPublicId: null,
+      },
+    });
+
+    await destroyCloudinaryAsset(solution.logoPublicId, "image");
+  } else {
+    await prisma.solution.update({
+      where: { id: solutionId },
+      data: {
+        coverImageUrl: null,
+        coverPublicId: null,
+      },
+    });
+
+    await destroyCloudinaryAsset(solution.coverPublicId, "image");
+  }
+
+  refreshSolutionPages(solution.slug);
+
+  return { success: true };
 }

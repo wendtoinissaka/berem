@@ -1125,3 +1125,16 @@ a {
   }
 }
 
+@keyframes circle-progress {
+  from {
+    stroke-dashoffset: 119.4;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-circle-progress {
+  animation: circle-progress 6s linear forwards;
+}

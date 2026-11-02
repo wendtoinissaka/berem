@@ -34,32 +34,45 @@ export default async function TestimonialsSection() {
     <section
       id="temoignages"
       aria-labelledby="testimonials-title"
-      className="relative overflow-hidden border-t border-[#EAE1D7] bg-[#FBF7F1] py-24 sm:py-28"
+      className="relative overflow-hidden border-t border-[#EAE1D7] bg-[#FBF7F1] py-12 sm:py-16 lg:py-20"
     >
-      <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#D59344]/[0.045] blur-3xl" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-40 top-20 h-96 w-96 rounded-full bg-[#D59344]/[0.045] blur-3xl"
+      />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <ScrollReveal>
-          <div className="mb-12 flex flex-col gap-8 border-b border-[#E5DCCE] pb-10 md:flex-row md:items-end md:justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <MessageSquareQuote className="text-[#BE7D32]" size={21} />
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#BE7D32]">
+          <div className="mb-8 flex flex-col gap-5 border-b border-[#E5DCCE] pb-7 sm:mb-10 sm:gap-7 sm:pb-9 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-2.5">
+                <MessageSquareQuote
+                  aria-hidden="true"
+                  className="shrink-0 text-[#BE7D32]"
+                  size={18}
+                  strokeWidth={1.8}
+                />
+
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#BE7D32] sm:text-xs sm:tracking-[0.22em]">
                   La parole à nos clients
                 </p>
               </div>
 
               <h2
                 id="testimonials-title"
-                className="mt-6 text-4xl font-black tracking-tight text-[#10161F] sm:text-5xl lg:text-6xl"
+                className="mt-4 text-[30px] font-black leading-[1.1] tracking-tight text-[#10161F] sm:mt-5 sm:text-5xl sm:leading-[1.08] lg:text-6xl"
               >
-                La confiance se construit.
+                La confiance
                 <br />
-                <span className="text-[#D59344]">Elle se partage aussi.</span>
+                se construit.
+                <br className="sm:hidden" />
+                <span className="text-[#D59344]">
+                  {" "}Elle se partage aussi.
+                </span>
               </h2>
             </div>
 
-            <p className="max-w-md text-base leading-8 text-[#647084]">
+            <p className="max-w-md text-sm leading-7 text-[#647084] sm:text-base sm:leading-8">
               La satisfaction de nos clients est au cœur de notre engagement.
               Découvrez leurs retours d'expérience avec BEREM.
             </p>

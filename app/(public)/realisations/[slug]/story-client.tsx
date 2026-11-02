@@ -210,7 +210,7 @@ export function ChantierStory({ entries }: { entries: StoryEntry[] }) {
       <aside className="sticky top-0 z-20 -mx-5 self-start sm:-mx-8 lg:top-24 lg:mx-0">
         <div className="bg-berem-primary p-4 text-white shadow-xl sm:px-8 lg:rounded-2xl lg:p-6">
           <div className="flex items-end justify-between gap-4 lg:block">
-            <p className="font-[family-name:var(--font-display)] text-4xl font-extrabold tabular-nums lg:text-7xl">
+            <p className="font-semibold text-4xl font-extrabold tabular-nums lg:text-7xl">
               {current.progress}
               <span className="ml-1 text-2xl text-berem-sand lg:text-4xl">%</span>
             </p>
@@ -270,7 +270,7 @@ export function ChantierStory({ entries }: { entries: StoryEntry[] }) {
               )}
             </div>
 
-            <h3 className="mt-3 font-[family-name:var(--font-display)] text-2xl font-bold leading-tight text-berem-primary sm:text-4xl">
+            <h3 className="mt-3 font-semibold text-2xl font-bold leading-tight text-berem-primary sm:text-4xl">
               {entry.title}
             </h3>
 

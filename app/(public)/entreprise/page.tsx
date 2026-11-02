@@ -56,106 +56,108 @@ export default function EntreprisePage() {
       {/* =====================================================
           HERO — IDENTITÉ DE L'ENTREPRISE
       ===================================================== */}
-      <section className="relative isolate overflow-hidden bg-[#10161F] text-white">
+<section className="relative isolate overflow-hidden bg-[#10161F] text-white">
 
-        {/* Trame architecturale */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
-            backgroundSize: "72px 72px",
-          }}
-        />
+  {/* Trame architecturale */}
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 opacity-[0.06]"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
+      backgroundSize: "72px 72px",
+    }}
+  />
 
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-48 -top-48 h-[650px] w-[650px] rounded-full border border-white/[0.08]"
-        />
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute -right-48 -top-48 h-[650px] w-[650px] rounded-full border border-white/[0.08]"
+  />
 
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-20 h-[400px] w-[400px] rounded-full border border-[#D59344]/20"
-        />
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute -right-20 top-20 h-[400px] w-[400px] rounded-full border border-[#D59344]/20"
+  />
 
-        <div className="relative mx-auto max-w-7xl px-5 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 lg:px-10">
+  <div className="relative mx-auto max-w-7xl px-5 pb-12 pt-10 sm:px-8 sm:pb-14 sm:pt-12 lg:px-10 lg:pb-16 lg:pt-14">
 
-          {/* Fil d'Ariane */}
-          <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/40">
-            <Link href="/" className="transition-colors hover:text-[#D59344]">
-              Accueil
-            </Link>
+    {/* Fil d'Ariane */}
+    <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/40">
+      <Link href="/" className="transition-colors hover:text-[#D59344]">
+        Accueil
+      </Link>
 
-            <span className="h-1 w-1 rounded-full bg-[#D59344]" />
+      <span className="h-1 w-1 rounded-full bg-[#D59344]" />
 
-            <span className="text-[#D59344]">L'entreprise</span>
-          </div>
+      <span className="text-[#D59344]">L'entreprise</span>
+    </div>
 
-          <div className="mt-20 grid gap-14 lg:grid-cols-[1fr_0.55fr] lg:items-end">
+    <div className="mt-12 grid gap-10 lg:mt-14 lg:grid-cols-[1fr_0.55fr] lg:items-center lg:gap-16">
 
-            {/* Titre */}
-            <div>
-              <div className="flex items-center gap-4">
-                <span className="h-[2px] w-10 bg-[#D59344]" />
+      {/* Titre */}
+      <div>
+        <div className="flex items-center gap-4">
+          <span className="h-[2px] w-9 bg-[#D59344]" />
 
-                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#D59344]">
-                  À propos de BEREM
-                </span>
-              </div>
-
-              <h1 className="mt-8 max-w-5xl text-5xl font-black leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-[78px]">
-                Construire avec
-                <br />
-                <span className="text-[#D59344]">rigueur.</span>
-                <br />
-                Avancer avec confiance.
-              </h1>
-
-              <p className="mt-9 max-w-2xl text-base leading-8 text-white/60 sm:text-lg">
-                BEREM accompagne ses clients dans leurs projets de construction
-                et de travaux, avec une approche fondée sur l'écoute,
-                l'organisation et le suivi.
-              </p>
-            </div>
-
-            {/* Bloc latéral */}
-            <div className="relative border-l border-white/15 pl-7 lg:mb-3">
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
-                Notre philosophie
-              </span>
-
-              <p className="mt-6 text-2xl font-semibold leading-snug sm:text-3xl">
-                La qualité d'un projet commence par la qualité de son
-                accompagnement.
-              </p>
-
-              <Link
-                href="#presentation"
-                className="group mt-9 inline-flex items-center gap-3 text-sm font-bold text-[#D59344] transition-colors hover:text-white"
-              >
-                Découvrir BEREM
-
-                <ArrowDown
-                  size={17}
-                  className="transition-transform duration-300 group-hover:translate-y-1"
-                />
-              </Link>
-            </div>
-          </div>
-
-          {/* Signature */}
-          <div className="mt-24 flex items-center justify-between border-t border-white/15 pt-6">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-xs">
-              BEREM — Bâtiment & ingénierie
-            </span>
-
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-xs">
-              Notre entreprise
-            </span>
-          </div>
+          <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#D59344]">
+            À propos de BEREM
+          </span>
         </div>
-      </section>
+
+        <h1 className="mt-6 max-w-4xl text-4xl font-black leading-[1.04] tracking-[-0.045em] sm:text-5xl lg:text-6xl xl:text-[68px]">
+          Construire avec
+          <br />
+          <span className="text-[#D59344]">rigueur.</span>
+          <br className="hidden sm:block" />
+          <span className="sm:whitespace-nowrap">
+            Avancer avec confiance.
+          </span>
+        </h1>
+
+        <p className="mt-6 max-w-2xl text-sm leading-7 text-white/60 sm:text-base sm:leading-8">
+          BEREM accompagne ses clients dans leurs projets de construction
+          et de travaux, avec une approche fondée sur l'écoute,
+          l'organisation et le suivi.
+        </p>
+      </div>
+
+      {/* Bloc latéral */}
+      <div className="relative border-l border-white/15 pl-6 lg:mb-0 lg:pl-8">
+        <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
+          Notre philosophie
+        </span>
+
+        <p className="mt-4 max-w-sm text-xl font-semibold leading-snug sm:text-2xl">
+          La qualité d'un projet commence par la qualité de son
+          accompagnement.
+        </p>
+
+        <Link
+          href="#presentation"
+          className="group mt-6 inline-flex items-center gap-3 text-sm font-bold text-[#D59344] transition-colors hover:text-white"
+        >
+          Découvrir BEREM
+
+          <ArrowDown
+            size={16}
+            className="transition-transform duration-300 group-hover:translate-y-1"
+          />
+        </Link>
+      </div>
+    </div>
+
+    {/* Signature */}
+    <div className="mt-12 flex items-center justify-between border-t border-white/15 pt-5 sm:mt-14">
+      <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-[10px]">
+        BEREM — Bâtiment & ingénierie
+      </span>
+
+      <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-[10px]">
+        Notre entreprise
+      </span>
+    </div>
+  </div>
+</section>
 
 
       {/* =====================================================

@@ -112,114 +112,112 @@ export default function ServicesPage() {
       {/* =====================================================
           HERO — INTRODUCTION
       ===================================================== */}
-      <section className="relative isolate overflow-hidden bg-[#10161F] text-white">
+<section className="relative isolate overflow-hidden bg-[#10161F] text-white">
 
-        {/* Décor architectural */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
+  {/* Décor architectural */}
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 opacity-[0.07]"
+    style={{
+      backgroundImage:
+        "linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px)",
+      backgroundSize: "64px 64px",
+    }}
+  />
 
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-40 top-10 h-[550px] w-[550px] rounded-full border border-white/[0.08]"
-        />
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute -right-40 top-0 h-[450px] w-[450px] rounded-full border border-white/[0.08]"
+  />
 
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-32 h-[350px] w-[350px] rounded-full border border-[#D59344]/20"
-        />
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute -right-20 top-24 h-[300px] w-[300px] rounded-full border border-[#D59344]/20"
+  />
 
-        <div className="relative mx-auto max-w-7xl px-5 pb-20 pt-24 sm:px-8 sm:pb-28 sm:pt-32 lg:px-10">
+  <div className="relative mx-auto max-w-7xl px-5 pb-12 pt-10 sm:px-8 sm:pb-14 sm:pt-12 lg:px-10 lg:pb-16 lg:pt-14">
 
-          {/* Fil d'Ariane */}
-          <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
-            <Link
-              href="/"
-              className="transition-colors hover:text-[#D59344]"
-            >
-              Accueil
-            </Link>
+    {/* Fil d'Ariane */}
+    <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
+      <Link
+        href="/"
+        className="transition-colors hover:text-[#D59344]"
+      >
+        Accueil
+      </Link>
 
-            <span className="h-1 w-1 rounded-full bg-[#D59344]" />
+      <span className="h-1 w-1 rounded-full bg-[#D59344]" />
 
-            <span className="text-[#D59344]">Nos services</span>
-          </div>
+      <span className="text-[#D59344]">Nos services</span>
+    </div>
 
-          <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_0.55fr] lg:items-end">
+    <div className="mt-10 grid gap-8 lg:mt-12 lg:grid-cols-[1fr_0.55fr] lg:items-end lg:gap-12">
 
-            {/* Titre principal */}
-            <div>
-              <div className="flex items-center gap-4">
-                <span className="h-[2px] w-10 bg-[#D59344]" />
+      {/* Titre principal */}
+      <div>
+        <div className="flex items-center gap-4">
+          <span className="h-[2px] w-10 bg-[#D59344]" />
 
-                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#D59344]">
-                  Nos domaines d'intervention
-                </span>
-              </div>
-
-              <h1 className="mt-7 max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-[76px]">
-                L'ingénierie
-                <br />
-                <span className="text-[#D59344]">
-                  au cœur
-                </span>
-                <br />
-                de vos projets.
-              </h1>
-
-              <p className="mt-8 max-w-xl text-base leading-8 text-white/60 sm:text-lg">
-                De la construction à la réhabilitation, BEREM vous accompagne
-                dans vos projets de bâtiment avec une approche fondée sur
-                l'organisation, la technique et le suivi.
-              </p>
-            </div>
-
-            {/* Bloc latéral */}
-            <div className="relative border-l border-white/15 pl-7 lg:mb-3">
-              <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/40">
-                Notre champ d'action
-              </span>
-
-              <p className="mt-5 text-2xl font-semibold leading-snug text-white sm:text-3xl">
-                Des besoins concrets.
-                <br />
-                <span className="text-[#D59344]">
-                  Des réponses adaptées.
-                </span>
-              </p>
-
-              <Link
-                href="#expertises"
-                className="group mt-9 inline-flex items-center gap-3 text-sm font-bold text-white transition-colors hover:text-[#D59344]"
-              >
-                Découvrir nos expertises
-
-                <ArrowDown
-                  size={17}
-                  className="transition-transform duration-300 group-hover:translate-y-1"
-                />
-              </Link>
-            </div>
-          </div>
-
-          {/* Bas du Hero */}
-          <div className="mt-20 flex items-center justify-between border-t border-white/15 pt-6">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 sm:text-xs">
-              BEREM — Bâtiment & ingénierie
-            </span>
-
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 sm:text-xs">
-              Nos prestations / 2026
-            </span>
-          </div>
+          <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#D59344]">
+            Nos domaines d'intervention
+          </span>
         </div>
-      </section>
+
+        <h1 className="mt-5 max-w-4xl text-4xl font-black leading-[1.05] tracking-[-0.045em] sm:text-5xl lg:text-6xl xl:text-[68px]">
+          L'ingénierie
+          <br />
+          <span className="text-[#D59344]">au cœur</span>
+          <br />
+          de vos projets.
+        </h1>
+
+        <p className="mt-6 max-w-xl text-sm leading-7 text-white/60 sm:text-base sm:leading-8">
+          De la construction à la réhabilitation, BEREM vous accompagne
+          dans vos projets de bâtiment avec une approche fondée sur
+          l'organisation, la technique et le suivi.
+        </p>
+      </div>
+
+      {/* Bloc latéral */}
+      <div className="relative border-l border-white/15 pl-6 lg:mb-2 lg:pl-7">
+        <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/40">
+          Notre champ d'action
+        </span>
+
+        <p className="mt-3 text-xl font-semibold leading-snug text-white sm:text-2xl">
+          Des besoins concrets.
+          <br />
+          <span className="text-[#D59344]">
+            Des réponses adaptées.
+          </span>
+        </p>
+
+        <Link
+          href="#expertises"
+          className="group mt-6 inline-flex items-center gap-3 text-sm font-bold text-white transition-colors hover:text-[#D59344]"
+        >
+          Découvrir nos expertises
+
+          <ArrowDown
+            size={17}
+            className="transition-transform duration-300 group-hover:translate-y-1"
+          />
+        </Link>
+      </div>
+    </div>
+
+    {/* Bas du Hero */}
+    <div className="mt-10 flex items-center justify-between border-t border-white/15 pt-5 sm:mt-12">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 sm:text-xs">
+        BEREM — Bâtiment & ingénierie
+      </span>
+
+      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 sm:text-xs">
+        Nos prestations / 2026
+      </span>
+    </div>
+  </div>
+</section>
 
 
       {/* =====================================================

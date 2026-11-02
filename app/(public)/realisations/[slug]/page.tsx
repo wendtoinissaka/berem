@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  MapPin,
+} from "lucide-react";
 
 import { getPublishedProjectBySlug } from "@/lib/data/projects";
-import { Gallery, type GalleryImage } from "./project-client";
 import {
-  BeforeAfter,
+  Gallery,
+  ImageComparison,
+  type GalleryImage,
+} from "./project-client";
+import {
   ChantierStory,
   Ruler,
   VideoItem,
@@ -15,17 +25,6 @@ import {
 } from "./story-client";
 
 export const instant = false;
-
-const display = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: ["500", "700", "800"],
-  variable: "--font-display",
-});
-
-const body = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-body",
-});
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -38,7 +37,7 @@ const statusLabels: Record<string, string> = {
   ON_HOLD: "En pause",
 };
 
-const statusDots: Record<string, string> = {
+const statusStyles: Record<string, string> = {
   COMPLETED: "bg-berem-success",
   IN_PROGRESS: "bg-berem-sand",
   PLANNED: "bg-berem-sand",
@@ -50,13 +49,17 @@ const formatDate = (date: Date, short = false) =>
     dateStyle: short ? "medium" : "long",
   }).format(date);
 
-const clampProgress = (p: number) => Math.round(Math.min(100, Math.max(0, p)));
+const clampProgress = (value: number) =>
+  Math.round(Math.min(100, Math.max(0, value)));
 
 const isFile = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
 
 function shorten(text: string, max = 160) {
-  const t = text.replace(/\s+/g, " ").trim();
-  return t.length <= max ? t : `${t.slice(0, max - 1).trimEnd()}…`;
+  const value = text.replace(/\s+/g, " ").trim();
+
+  return value.length <= max
+    ? value
+    : `${value.slice(0, max - 1).trimEnd()}…`;
 }
 
 export async function generateMetadata({
@@ -80,13 +83,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function RealisationDetailPage({ params }: PageProps) {
+export default async function RealisationDetailPage({
+  params,
+}: PageProps) {
   const { slug } = await params;
 
   return (
-    <div
-      className={`${display.variable} ${body.variable} font-[family-name:var(--font-body)]`}
-    >
+    <div className="font-sans">
       <Suspense fallback={<RealisationLoading />}>
         <RealisationContent slug={slug} />
       </Suspense>
@@ -96,11 +99,12 @@ export default async function RealisationDetailPage({ params }: PageProps) {
 
 function RealisationLoading() {
   return (
-    <main className="min-h-screen bg-berem-primary text-white">
-      <div className="mx-auto max-w-6xl animate-pulse px-5 pt-40 sm:px-8">
-        <div className="h-16 w-3/4 rounded-lg bg-white/10" />
-        <div className="mt-6 h-4 w-1/2 rounded bg-white/10" />
-        <div className="mt-24 h-14 rounded bg-white/10" />
+    <main className="min-h-screen bg-berem-primary">
+      <div className="mx-auto max-w-6xl animate-pulse px-5 pb-20 pt-32 sm:px-8">
+        <div className="h-4 w-32 rounded bg-white/10" />
+        <div className="mt-8 h-14 max-w-2xl rounded bg-white/10" />
+        <div className="mt-5 h-4 max-w-xl rounded bg-white/10" />
+        <div className="mt-12 h-64 rounded-xl bg-white/10" />
       </div>
     </main>
   );
@@ -108,168 +112,201 @@ function RealisationLoading() {
 
 async function RealisationContent({ slug }: { slug: string }) {
   const project = await getPublishedProjectBySlug(slug);
+
   if (!project) notFound();
 
   const status = project.status as string;
   const isDone = status === "COMPLETED";
-  const isLive = status === "IN_PROGRESS" || isDone || status === "ON_HOLD";
+  const isLive =
+    status === "IN_PROGRESS" ||
+    isDone ||
+    status === "ON_HOLD";
+
   const progress = isDone ? 100 : clampProgress(project.progress);
 
-  const images = project.media.filter((m) => m.type === "IMAGE");
-  const videos = project.media.filter((m) => m.type === "VIDEO");
+  const images = project.media.filter((media) => media.type === "IMAGE");
+  const videos = project.media.filter((media) => media.type === "VIDEO");
 
-  /* Rapports classés du plus ancien au plus récent, quel que soit l’ordre de la requête */
-  const when = (u: (typeof project.updates)[number]) =>
-    u.publishedAt ?? u.eventDate;
+  const when = (update: (typeof project.updates)[number]) =>
+    update.publishedAt ?? update.eventDate;
+
   const chrono = [...project.updates].sort(
     (a, b) => when(a).getTime() - when(b).getTime(),
   );
+
   const latest = chrono[chrono.length - 1];
 
-  const entries: StoryEntry[] = chrono.map((u) => ({
-    id: u.id,
-    title: u.title,
-    description: u.description,
-    progress: clampProgress(u.progress),
-    date: formatDate(when(u), true),
-    dateTime: when(u).toISOString(),
-    stage: u.stage?.name ?? null,
-    images: u.media
-      .filter((m) => m.type === "IMAGE")
-      .map((m) => ({
-        id: m.id,
-        url: m.url,
-        caption: m.caption,
-        alt: m.caption || u.title,
+  const entries: StoryEntry[] = chrono.map((update) => ({
+    id: update.id,
+    title: update.title,
+    description: update.description,
+    progress: clampProgress(update.progress),
+    date: formatDate(when(update), true),
+    dateTime: when(update).toISOString(),
+    stage: update.stage?.name ?? null,
+    images: update.media
+      .filter((media) => media.type === "IMAGE")
+      .map((media) => ({
+        id: media.id,
+        url: media.url,
+        caption: media.caption,
+        alt: media.caption || update.title,
       })),
-    videos: u.media
-      .filter((m) => m.type === "VIDEO")
-      .map((m) => ({
-        id: m.id,
-        url: m.url,
-        caption: m.caption,
-        isFile: isFile(m.url),
+    videos: update.media
+      .filter((media) => media.type === "VIDEO")
+      .map((media) => ({
+        id: media.id,
+        url: media.url,
+        caption: media.caption,
+        isFile: isFile(media.url),
       })),
   }));
 
-  /* Avant / maintenant : première et dernière photo de suivi, si dates différentes */
-  const pics = entries.flatMap((e) =>
-    e.images.map((img) => ({ url: img.url, date: e.date })),
+  const pics = entries.flatMap((entry) =>
+    entry.images.map((image) => ({
+      url: image.url,
+      date: entry.date,
+      alt: image.alt,
+    })),
   );
+
   const first = pics[0];
   const last = pics[pics.length - 1];
+
   const canCompare =
-    !!first && !!last && first.date !== last.date && first.url !== last.url;
+    !!first &&
+    !!last &&
+    first.date !== last.date &&
+    first.url !== last.url;
 
   const cover = images[0]?.url ?? last?.url;
 
-  const galleryImages: GalleryImage[] = images.map((m) => ({
-    id: m.id,
-    url: m.url,
-    caption: m.caption,
-    alt: m.caption || project.title,
+  const galleryImages: GalleryImage[] = images.map((media) => ({
+    id: media.id,
+    url: media.url,
+    caption: media.caption,
+    alt: media.caption || project.title,
   }));
-
-  const cell = "bg-berem-primary/85 p-4";
-  const cellLabel = "text-xs text-white/60";
-  const cellValue = "mt-1 font-semibold";
-
-  let section = 0;
-  const num = () => String(++section).padStart(2, "0");
 
   return (
     <>
-      {/* ───────── HERO : photo + trame de plan + fiche chantier ───────── */}
-      <header className="relative isolate flex min-h-[92vh] items-end overflow-hidden bg-berem-primary text-white">
-        {cover && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={cover}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 -z-30 h-full w-full object-cover"
-          />
-        )}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-20 bg-gradient-to-t from-berem-primary via-berem-primary/75 to-berem-primary/30"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] bg-[size:72px_72px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"
-        />
-
-        <div className="mx-auto w-full max-w-6xl px-5 pb-10 pt-32 sm:px-8 sm:pb-14">
+      {/* HERO */}
+      <header className="bg-berem-primary text-white">
+        <div className="mx-auto max-w-6xl px-5 pb-12 pt-28 sm:px-8 sm:pb-16">
           <Link
             href="/realisations"
-            className="inline-flex items-center gap-2 text-sm font-medium text-white/80 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            className="inline-flex items-center gap-2 text-sm text-white/65 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
           >
-            <span aria-hidden="true">←</span> Toutes les réalisations
+            <ArrowLeft size={16} />
+            Toutes les réalisations
           </Link>
 
-          <div className="mt-10 grid items-end gap-10 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-14">
+          <div className="mt-10 grid items-center gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-14">
             <div>
-              <h1 className="font-[family-name:var(--font-display)] text-5xl font-extrabold leading-[0.98] tracking-tight sm:text-7xl lg:text-8xl">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium">
+                  <span
+                    className={`h-2 w-2 rounded-full ${statusStyles[status] ?? "bg-white/40"}`}
+                  />
+                  {statusLabels[status] ?? "Statut à confirmer"}
+                </span>
+
+                {project.location && (
+                  <span className="inline-flex items-center gap-1.5 text-sm text-white/65">
+                    <MapPin size={15} />
+                    {project.location}
+                  </span>
+                )}
+              </div>
+
+              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-berem-sand">
+                Nos réalisations
+              </p>
+
+              <h1 className="mt-3 max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
                 {project.title}
               </h1>
-              <p className="mt-6 max-w-xl whitespace-pre-line text-base leading-8 text-white/85 sm:text-lg">
+
+              <p className="mt-5 max-w-xl whitespace-pre-line text-base leading-7 text-white/70">
                 {project.description}
               </p>
+
+              <div className="mt-8 flex flex-wrap gap-x-7 gap-y-4 border-t border-white/15 pt-6">
+                <div>
+                  <p className="flex items-center gap-2 text-xs text-white/45">
+                    <CalendarDays size={14} />
+                    Démarrage
+                  </p>
+                  <p className="mt-2 text-sm font-semibold">
+                    {project.startDate
+                      ? formatDate(project.startDate, true)
+                      : "À venir"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="flex items-center gap-2 text-xs text-white/45">
+                    <Clock3 size={14} />
+                    Dernière actualité
+                  </p>
+                  <p className="mt-2 text-sm font-semibold">
+                    {latest
+                      ? formatDate(when(latest), true)
+                      : "Non disponible"}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-white/25 bg-white/25 text-sm backdrop-blur-sm">
-              <div className={`${cell} col-span-2`}>
-                <dt className={cellLabel}>Localisation</dt>
-                <dd className={cellValue}>{project.location}</dd>
-              </div>
-              <div className={cell}>
-                <dt className={cellLabel}>Statut</dt>
-                <dd className={`${cellValue} flex items-center gap-2`}>
-                  <span
-                    aria-hidden="true"
-                    className={`h-2 w-2 rounded-full ${statusDots[status] ?? "bg-berem-muted"}`}
+            {cover ? (
+              <div className="relative">
+                <div className="overflow-hidden rounded-xl bg-white/5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={cover}
+                    alt={`Vue du projet ${project.title}`}
+                    className="aspect-[5/4] w-full object-cover"
                   />
-                  {statusLabels[status] ?? "À confirmer"}
-                </dd>
-              </div>
-              <div className={cell}>
-                <dt className={cellLabel}>Démarrage</dt>
-                <dd className={cellValue}>
-                  {project.startDate ? (
-                    <time dateTime={project.startDate.toISOString()}>
-                      {formatDate(project.startDate, true)}
-                    </time>
-                  ) : (
-                    "À venir"
-                  )}
-                </dd>
-              </div>
-              {latest?.stage?.name && (
-                <div className={`${cell} col-span-2`}>
-                  <dt className={cellLabel}>Étape actuelle</dt>
-                  <dd className={cellValue}>{latest.stage.name}</dd>
                 </div>
-              )}
-              {latest && (
-                <div className={`${cell} col-span-2`}>
-                  <dt className={cellLabel}>Dernière mise à jour</dt>
-                  <dd className={cellValue}>
-                    <time dateTime={when(latest).toISOString()}>
-                      {formatDate(when(latest))}
-                    </time>
-                  </dd>
+
+                <div className="absolute -bottom-4 left-4 right-4 flex items-center justify-between rounded-lg border border-white/10 bg-berem-primary/95 px-4 py-3 shadow-xl backdrop-blur sm:left-7 sm:right-7">
+                  <span className="text-xs text-white/65">
+                    Réalisation BEREM
+                  </span>
+                  <span className="text-xs font-semibold text-berem-sand">
+                    {statusLabels[status] ?? "Projet"}
+                  </span>
                 </div>
-              )}
-            </dl>
+              </div>
+            ) : (
+              <div className="flex aspect-[5/4] items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm text-white/45">
+                Photo du projet à venir
+              </div>
+            )}
           </div>
 
+          {/* Progression */}
           {isLive && (
-            <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-10">
-              <p className="font-[family-name:var(--font-display)] text-6xl font-extrabold leading-none tabular-nums sm:text-7xl">
-                {progress}
-                <span className="ml-1 text-3xl text-berem-sand">%</span>
-              </p>
-              <div className="flex-1">
+            <div className="mt-16 max-w-3xl border-t border-white/15 pt-6">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-sm text-white/55">
+                    Avancement du projet
+                  </p>
+                  <p className="mt-1 text-3xl font-bold tabular-nums">
+                    {progress}
+                    <span className="ml-1 text-lg text-berem-sand">%</span>
+                  </p>
+                </div>
+
+                {latest?.stage?.name && (
+                  <p className="max-w-[50%] text-right text-sm text-white/65">
+                    {latest.stage.name}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
                 <Ruler value={progress} />
               </div>
             </div>
@@ -278,113 +315,179 @@ async function RealisationContent({ slug }: { slug: string }) {
       </header>
 
       <main className="bg-background text-foreground">
-        <div className="mx-auto max-w-6xl space-y-24 px-5 py-20 sm:px-8 lg:space-y-32 lg:py-28">
-          {/* ───────── AVANT / MAINTENANT ───────── */}
+        <div className="mx-auto max-w-6xl space-y-20 px-5 py-16 sm:px-8 sm:py-20 lg:space-y-24 lg:py-24">
+          {/* ÉVOLUTION DU CHANTIER */}
           {canCompare && (
-            <section aria-labelledby="avant-apres">
-              <p className="font-mono text-sm text-berem-muted">{num()}</p>
-              <h2
-                id="avant-apres"
-                className="mt-2 max-w-3xl font-[family-name:var(--font-display)] text-4xl font-extrabold leading-tight tracking-tight text-berem-primary sm:text-6xl"
-              >
-                Ce qui a changé depuis le début
-              </h2>
-              <p className="mt-4 max-w-xl leading-7 text-berem-muted">
-                Faites glisser pour comparer la première et la dernière photo
-                de suivi du chantier.
-              </p>
-              <div className="mt-8">
-                <BeforeAfter
-                  before={first.url}
-                  after={last.url}
-                  beforeLabel={first.date}
-                  afterLabel={last.date}
-                  alt={project.title}
+            <section aria-labelledby="evolution">
+              <SectionHeading
+                number="01"
+                eyebrow="Évolution du projet"
+                title="Du début à aujourd'hui"
+                description="Voici un aperçu de l'évolution du chantier entre les premières interventions et la dernière étape documentée."
+              />
+
+              <div className="mt-7">
+                <ImageComparison
+                  before={{
+                    id: "project-start",
+                    url: first.url,
+                    alt: first.alt,
+                    caption: "Début du chantier",
+                  }}
+                  after={{
+                    id: "project-latest",
+                    url: last.url,
+                    alt: last.alt,
+                    caption: "Dernière étape",
+                  }}
                 />
               </div>
             </section>
           )}
 
-          {/* ───────── LE CHANTIER, ÉTAPE PAR ÉTAPE ───────── */}
+          {/* JOURNAL */}
           {entries.length > 0 && (
             <section aria-labelledby="journal">
-              <p className="font-mono text-sm text-berem-muted">{num()}</p>
-              <h2
-                id="journal"
-                className="mt-2 max-w-3xl font-[family-name:var(--font-display)] text-4xl font-extrabold leading-tight tracking-tight text-berem-primary sm:text-6xl"
-              >
-                Le chantier, étape par étape
-              </h2>
-              <p className="mb-12 mt-4 max-w-xl leading-7 text-berem-muted">
-                Faites défiler : l’avancement évolue à chaque rapport, du
-                démarrage jusqu’à aujourd’hui.
-              </p>
-              <ChantierStory entries={entries} />
+              <SectionHeading
+                number={canCompare ? "02" : "01"}
+                eyebrow="Suivi des travaux"
+                title="Le chantier, étape par étape"
+                description="Consultez les différentes étapes du projet et découvrez les avancées au fil des interventions."
+              />
+
+              <div className="mt-8">
+                <ChantierStory entries={entries} />
+              </div>
             </section>
           )}
 
-          {/* ───────── GALERIE ───────── */}
+          {/* GALERIE */}
           <section aria-labelledby="galerie">
-            <p className="font-mono text-sm text-berem-muted">{num()}</p>
-            <h2
-              id="galerie"
-              className="mt-2 font-[family-name:var(--font-display)] text-4xl font-extrabold leading-tight tracking-tight text-berem-primary sm:text-6xl"
-            >
-              Le projet en images
-            </h2>
+            <SectionHeading
+              number={
+                canCompare
+                  ? "03"
+                  : entries.length > 0
+                    ? "02"
+                    : "01"
+              }
+              eyebrow="Galerie photographique"
+              title="Le projet en images"
+              description="Parcourez les images de cette réalisation. Sélectionnez une photo pour l'afficher en grand et examiner les détails."
+            />
 
             {galleryImages.length > 0 ? (
-              <div className="mt-10">
+              <div className="mt-8">
                 <Gallery images={galleryImages} layout="masonry" />
               </div>
             ) : (
-              <p className="mt-8 rounded-2xl border border-berem-border bg-berem-surface-elevated p-6 leading-7 text-berem-muted">
-                Les photos de ce projet seront ajoutées prochainement.
-              </p>
+              <div className="mt-8 rounded-xl border border-berem-border bg-berem-surface-elevated px-6 py-10 text-center">
+                <p className="font-semibold text-berem-primary">
+                  Galerie bientôt disponible
+                </p>
+                <p className="mt-2 text-sm text-berem-muted">
+                  Les photos de ce projet seront ajoutées prochainement.
+                </p>
+              </div>
             )}
+          </section>
 
-            {videos.length > 0 && (
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                {videos.map((v) => (
+          {/* VIDÉOS */}
+          {videos.length > 0 && (
+            <section aria-labelledby="videos">
+              <SectionHeading
+                number={
+                  canCompare
+                    ? "04"
+                    : entries.length > 0
+                      ? "03"
+                      : "02"
+                }
+                eyebrow="Contenus vidéo"
+                title="Le projet en mouvement"
+                description="Découvrez des séquences vidéo qui illustrent les travaux et les différentes interventions."
+              />
+
+              <div className="mt-8 grid gap-6 sm:grid-cols-2">
+                {videos.map((video) => (
                   <VideoItem
-                    key={v.id}
+                    key={video.id}
                     video={{
-                      id: v.id,
-                      url: v.url,
-                      caption: v.caption,
-                      isFile: isFile(v.url),
+                      id: video.id,
+                      url: video.url,
+                      caption: video.caption,
+                      isFile: isFile(video.url),
                     }}
                     label={`Vidéo du projet ${project.title}`}
                   />
                 ))}
               </div>
-            )}
-          </section>
+            </section>
+          )}
         </div>
 
-        {/* ───────── APPEL À L’ACTION ───────── */}
-        <section className="bg-berem-sand px-5 py-20 text-berem-primary sm:px-8 sm:py-28">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="max-w-4xl font-[family-name:var(--font-display)] text-4xl font-extrabold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
-              Un projet comme celui-ci ?<br />
-              Construisons-le ensemble.
-            </h2>
+        {/* CTA */}
+        <section className="bg-berem-surface px-5 py-16 sm:px-8 sm:py-20">
+          <div className="mx-auto flex max-w-6xl flex-col justify-between gap-8 lg:flex-row lg:items-center">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-berem-muted">
+                Votre projet commence ici
+              </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
-              <Link
-                href="/devis"
-                className="inline-flex items-center gap-3 rounded-full bg-berem-primary px-8 py-4 font-bold text-white transition hover:bg-berem-primary/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-berem-primary"
-              >
-                Demander un devis <span aria-hidden="true">→</span>
-              </Link>
-              <p className="max-w-sm leading-7 text-berem-primary/80">
-                Décrivez votre besoin : nous revenons vers vous avec une
-                première estimation.
+              <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-berem-primary sm:text-4xl lg:text-5xl">
+                Vous avez un projet de construction ?
+              </h2>
+
+              <p className="mt-4 max-w-xl text-sm leading-7 text-berem-muted sm:text-base">
+                Présentez-nous votre besoin. Notre équipe pourra étudier
+                votre projet et vous accompagner dans sa réalisation.
               </p>
             </div>
+
+            <Link
+              href="/devis"
+              className="inline-flex shrink-0 items-center justify-center gap-3 rounded-full bg-berem-primary px-7 py-4 text-sm font-semibold text-white transition hover:bg-berem-blue focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-berem-primary"
+            >
+              Demander un devis
+              <ArrowRight size={17} />
+            </Link>
           </div>
         </section>
       </main>
     </>
+  );
+}
+
+function SectionHeading({
+  number,
+  eyebrow,
+  title,
+  description,
+}: {
+  number: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex flex-col gap-4 border-b border-berem-border pb-6 sm:flex-row sm:gap-8">
+      <span className="pt-1 text-sm font-semibold tabular-nums text-berem-orange">
+        {number}
+      </span>
+
+      <div className="max-w-2xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-berem-muted">
+          {eyebrow}
+        </p>
+
+        <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-berem-primary sm:text-4xl">
+          {title}
+        </h2>
+
+        <p className="mt-3 text-sm leading-7 text-berem-muted sm:text-base">
+          {description}
+        </p>
+      </div>
+    </div>
   );
 }

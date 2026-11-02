@@ -1,10 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import {
   ArrowRight,
   ArrowUpRight,
   ClipboardList,
   DraftingCompass,
   HardHat,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import ScrollReveal from "@/components/ui/ScrollReveal";
@@ -40,35 +46,229 @@ const steps = [
 ];
 
 export default function SolutionsSection() {
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const positionsRef = useRef<number[]>([]);
+
+  const [slidePositions, setSlidePositions] = useState<number[]>([0]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  const maxIndex = slidePositions.length - 1;
+
+  // Détecter la préférence de réduction des animations.
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    const updatePreference = () => {
+      setReducedMotion(mediaQuery.matches);
+    };
+
+    updatePreference();
+
+    mediaQuery.addEventListener("change", updatePreference);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updatePreference);
+    };
+  }, []);
+
+  // Calculer les positions réelles de navigation.
+  const updateCarousel = useCallback(() => {
+    const carousel = carouselRef.current;
+
+    if (!carousel) return;
+
+    const cards = Array.from(
+      carousel.querySelectorAll<HTMLElement>("[data-solution-card]"),
+    );
+
+    if (!cards.length) return;
+
+    const maxScroll = Math.max(
+      0,
+      carousel.scrollWidth - carousel.clientWidth,
+    );
+
+    const firstCardLeft =
+      cards[0].getBoundingClientRect().left -
+      carousel.getBoundingClientRect().left +
+      carousel.scrollLeft;
+
+    const positions = cards
+      .map((card) => {
+        const position =
+          card.getBoundingClientRect().left -
+          carousel.getBoundingClientRect().left +
+          carousel.scrollLeft -
+          firstCardLeft;
+
+        return Math.min(position, maxScroll);
+      })
+      .filter((position, index, array) => {
+        return (
+          position >= 0 &&
+          array.findIndex(
+            (other) => Math.abs(other - position) < 2,
+          ) === index
+        );
+      });
+
+    // Ajouter la dernière position si nécessaire.
+    if (
+      maxScroll > 2 &&
+      !positions.some((position) => Math.abs(position - maxScroll) < 2)
+    ) {
+      positions.push(maxScroll);
+    }
+
+    const uniquePositions = positions.sort((a, b) => a - b);
+
+    positionsRef.current = uniquePositions;
+
+    setSlidePositions(uniquePositions);
+
+    // Conserver une position valide après un redimensionnement.
+    const currentPosition = carousel.scrollLeft;
+
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    uniquePositions.forEach((position, index) => {
+      const distance = Math.abs(position - currentPosition);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    setActiveIndex(closestIndex);
+  }, []);
+
+  // Observer les changements de dimensions.
+  useEffect(() => {
+    const carousel = carouselRef.current;
+
+    if (!carousel) return;
+
+    const observer = new ResizeObserver(() => {
+      updateCarousel();
+    });
+
+    observer.observe(carousel);
+
+    Array.from(carousel.children).forEach((child) => {
+      observer.observe(child);
+    });
+
+    updateCarousel();
+
+    return () => observer.disconnect();
+  }, [updateCarousel]);
+
+  // Navigation vers une position précise.
+  const goToSlide = useCallback(
+    (index: number) => {
+      const carousel = carouselRef.current;
+      const positions = positionsRef.current;
+
+      if (!carousel || !positions.length) return;
+
+      const targetIndex = Math.max(
+        0,
+        Math.min(index, positions.length - 1),
+      );
+
+      carousel.scrollTo({
+        left: positions[targetIndex],
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
+
+      setActiveIndex(targetIndex);
+    },
+    [reducedMotion],
+  );
+
+  // Navigation précédente avec retour à la dernière position.
+  const prevSlide = useCallback(() => {
+    if (maxIndex <= 0) return;
+
+    const nextIndex = activeIndex <= 0 ? maxIndex : activeIndex - 1;
+
+    goToSlide(nextIndex);
+  }, [activeIndex, maxIndex, goToSlide]);
+
+  // Navigation suivante avec retour à la première position.
+  const nextSlide = useCallback(() => {
+    if (maxIndex <= 0) return;
+
+    const nextIndex = activeIndex >= maxIndex ? 0 : activeIndex + 1;
+
+    goToSlide(nextIndex);
+  }, [activeIndex, maxIndex, goToSlide]);
+
+  // Synchroniser la pagination avec le défilement manuel.
+  const handleScroll = useCallback(() => {
+    const carousel = carouselRef.current;
+    const positions = positionsRef.current;
+
+    if (!carousel || !positions.length) return;
+
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+
+    positions.forEach((position, index) => {
+      const distance = Math.abs(carousel.scrollLeft - position);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    setActiveIndex(closestIndex);
+  }, []);
+
   return (
     <section
       id="approche"
-      className="relative isolate overflow-hidden bg-[#10161F] py-24 text-white sm:py-32"
+      className="relative isolate overflow-hidden bg-[#10161F] py-14 text-white sm:py-20 lg:py-24"
     >
+      {/* DÉCORATION */}
       <div className="pointer-events-none absolute -right-40 top-0 -z-10 h-[500px] w-[500px] rounded-full border border-white/[0.06]" />
+
       <div className="pointer-events-none absolute -right-20 top-20 -z-10 h-[340px] w-[340px] rounded-full border border-white/[0.06]" />
+
       <div className="pointer-events-none absolute bottom-0 left-0 -z-10 h-1/2 w-1/2 bg-gradient-to-tr from-[#D59344]/[0.07] to-transparent" />
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+
+        {/* EN-TÊTE */}
         <ScrollReveal>
-          <div className="grid gap-8 border-b border-white/15 pb-12 lg:grid-cols-[1fr_0.7fr] lg:items-end">
+          <div className="grid gap-6 border-b border-white/15 pb-8 sm:gap-8 sm:pb-12 lg:grid-cols-[1fr_0.7fr] lg:items-end">
+
             <div>
-              <div className="flex items-center gap-4">
-                <span className="h-[2px] w-10 bg-[#D59344]" />
-                <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#D59344] sm:text-sm">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <span className="h-[2px] w-8 bg-[#D59344] sm:w-10" />
+
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#D59344] sm:text-xs sm:tracking-[0.25em]">
                   Notre méthode de travail
                 </p>
               </div>
 
-              <h2 className="mt-6 max-w-3xl text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+              <h2 className="mt-5 text-3xl font-black leading-[1.08] tracking-tight sm:mt-6 sm:text-5xl lg:text-6xl">
                 De la vision
                 <br />
-                <span className="text-[#D59344]">à la réalisation.</span>
+                <span className="text-[#D59344]">
+                  à la réalisation.
+                </span>
               </h2>
             </div>
 
             <div className="lg:pb-2">
-              <p className="max-w-lg text-base leading-8 text-white/65">
+              <p className="max-w-lg text-sm leading-7 text-white/65 sm:text-base sm:leading-8">
                 Chaque projet est différent. Notre approche consiste à
                 comprendre vos besoins, préparer les interventions et
                 accompagner la réalisation avec méthode et exigence.
@@ -76,9 +276,10 @@ export default function SolutionsSection() {
 
               <Link
                 href="/solutions"
-                className="group mt-6 inline-flex items-center gap-3 border-b border-[#D59344]/60 pb-2 text-sm font-bold text-white transition-colors hover:text-[#D59344]"
+                className="group mt-5 inline-flex items-center gap-3 border-b border-[#D59344]/60 pb-2 text-sm font-bold text-white transition-colors hover:text-[#D59344] sm:mt-6"
               >
                 Découvrir nos solutions
+
                 <ArrowUpRight
                   size={18}
                   className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
@@ -88,196 +289,139 @@ export default function SolutionsSection() {
           </div>
         </ScrollReveal>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
+        {/* CARROUSEL */}
+        <ScrollReveal delay={120}>
+          <div className="relative mt-8 sm:mt-12">
 
-            return (
-              <ScrollReveal key={step.number} delay={index * 140}>
-                <article className="group relative h-full overflow-hidden border border-white/10 bg-white/[0.035] p-7 transition-all duration-500 hover:-translate-y-2 hover:border-[#D59344]/50 hover:bg-white/[0.07] sm:p-8">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold tracking-[0.2em] text-[#D59344]">
-                      ÉTAPE {step.number}
+            {/* FLÈCHE GAUCHE */}
+            <button
+              type="button"
+              onClick={prevSlide}
+              disabled={maxIndex === 0}
+              aria-label="Étapes précédentes"
+              className="absolute -left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#10161F] text-white shadow-[0_5px_20px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-[#D59344] hover:bg-[#D59344] hover:text-[#10161F] disabled:cursor-not-allowed disabled:opacity-30 sm:-left-5 sm:h-12 sm:w-12 lg:-left-6"
+            >
+              <ChevronLeft size={23} strokeWidth={1.8} />
+            </button>
+
+            {/* CARTES */}
+            <div
+              ref={carouselRef}
+              onScroll={handleScroll}
+              className="berem-carousel flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-5 sm:gap-5"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+              aria-label="Carrousel des étapes de notre méthode"
+            >
+              {steps.map((step) => {
+                const Icon = step.icon;
+
+                return (
+                  <article
+                    key={step.number}
+                    data-solution-card
+                    className="group relative flex min-h-[300px] w-[88%] shrink-0 snap-start flex-col overflow-hidden border border-white/10 bg-white/[0.035] p-5 transition-all duration-500 hover:border-[#D59344]/50 hover:bg-white/[0.07] sm:min-h-[330px] sm:w-[calc((100%-20px)/2)] sm:p-7 lg:min-h-[350px] lg:w-[calc((100%-40px)/3)] lg:p-8"
+                  >
+                    {/* NUMÉRO */}
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-2 -top-4 text-[85px] font-black leading-none tracking-tighter text-white/[0.035] transition-colors duration-500 group-hover:text-[#D59344]/[0.09]"
+                    >
+                      {step.number}
                     </span>
 
-                    <div className="flex h-12 w-12 items-center justify-center border border-white/10 bg-white/[0.04] text-[#D59344] transition-all duration-500 group-hover:rotate-6 group-hover:border-[#D59344]/40 group-hover:bg-[#D59344] group-hover:text-[#10161F]">
-                      <Icon size={22} strokeWidth={1.6} />
-                    </div>
-                  </div>
-
-                  <p className="mt-10 text-xs font-bold uppercase tracking-[0.18em] text-white/40">
-                    {step.subtitle}
-                  </p>
-
-                  <h3 className="mt-3 text-3xl font-black tracking-tight transition-colors duration-300 group-hover:text-[#D59344]">
-                    {step.title}
-                  </h3>
-
-                  <p className="mt-5 min-h-[105px] text-sm leading-7 text-white/60">
-                    {step.description}
-                  </p>
-
-                  <div className="mt-7 flex flex-wrap gap-2">
-                    {step.details.map((detail) => (
-                      <span
-                        key={detail}
-                        className="border border-white/10 px-3 py-2 text-[11px] font-medium text-white/60 transition-colors duration-300 group-hover:border-white/20"
-                      >
-                        {detail}
+                    {/* EN-TÊTE DE CARTE */}
+                    <div className="relative flex items-center justify-between">
+                      <span className="text-xs font-bold tracking-[0.2em] text-[#D59344] sm:text-sm">
+                        ÉTAPE {step.number}
                       </span>
-                    ))}
-                  </div>
 
-                  <div className="mt-9 flex items-center justify-between border-t border-white/10 pt-5">
-                    <span className="text-xs font-medium text-white/35">
-                      BEREM — Notre approche
-                    </span>
+                      <div className="flex h-11 w-11 items-center justify-center border border-white/10 bg-white/[0.04] text-[#D59344] transition-all duration-500 group-hover:rotate-6 group-hover:border-[#D59344]/40 group-hover:bg-[#D59344] group-hover:text-[#10161F] sm:h-12 sm:w-12">
+                        <Icon size={22} strokeWidth={1.6} />
+                      </div>
+                    </div>
 
-                    <ArrowRight
-                      size={18}
-                      className="text-[#D59344] transition-transform duration-300 group-hover:translate-x-2"
-                    />
-                  </div>
+                    {/* CONTENU */}
+                    <p className="relative mt-7 text-[10px] font-bold uppercase tracking-[0.18em] text-white/40 sm:mt-9 sm:text-xs">
+                      {step.subtitle}
+                    </p>
 
-                  <div className="absolute bottom-0 left-0 h-[3px] w-0 bg-[#D59344] transition-all duration-500 group-hover:w-full" />
-                </article>
-              </ScrollReveal>
-            );
-          })}
-        </div>
+                    <h3 className="relative mt-3 text-2xl font-black tracking-tight transition-colors duration-300 group-hover:text-[#D59344] sm:text-3xl">
+                      {step.title}
+                    </h3>
+
+                    <p className="relative mt-4 text-sm leading-7 text-white/60">
+                      {step.description}
+                    </p>
+
+                    {/* DÉTAILS */}
+                    <div className="relative mt-6 flex flex-wrap gap-2">
+                      {step.details.map((detail) => (
+                        <span
+                          key={detail}
+                          className="border border-white/10 px-3 py-2 text-[10px] font-medium text-white/60 transition-colors duration-300 group-hover:border-white/20 sm:text-[11px]"
+                        >
+                          {detail}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* FOOTER */}
+                    <div className="relative mt-auto flex items-center justify-between border-t border-white/10 pt-5 mt-7">
+                      <span className="text-[10px] font-medium text-white/35 sm:text-xs">
+                        BEREM — Notre approche
+                      </span>
+
+                      <ArrowRight
+                        size={18}
+                        className="text-[#D59344] transition-transform duration-300 group-hover:translate-x-2"
+                      />
+                    </div>
+
+                    {/* BARRE INFÉRIEURE */}
+                    <div className="absolute bottom-0 left-0 h-[3px] w-0 bg-[#D59344] transition-all duration-500 group-hover:w-full" />
+                  </article>
+                );
+              })}
+            </div>
+
+            {/* FLÈCHE DROITE */}
+            <button
+              type="button"
+              onClick={nextSlide}
+              disabled={maxIndex === 0}
+              aria-label="Étapes suivantes"
+              className="absolute -right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#10161F] text-white shadow-[0_5px_20px_rgba(0,0,0,0.18)] transition-all duration-300 hover:border-[#D59344] hover:bg-[#D59344] hover:text-[#10161F] disabled:cursor-not-allowed disabled:opacity-30 sm:-right-5 sm:h-12 sm:w-12 lg:-right-6"
+            >
+              <ChevronRight size={23} strokeWidth={1.8} />
+            </button>
+
+            {/* PAGINATION */}
+            <div className="mt-3 flex items-center justify-center">
+              <div className="flex items-center gap-3">
+                {slidePositions.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => goToSlide(index)}
+                    aria-label={`Afficher la position ${index + 1}`}
+                    aria-current={
+                      activeIndex === index ? "true" : undefined
+                    }
+                    className={`h-[7px] rounded-full transition-all duration-300 ${
+                      activeIndex === index
+                        ? "w-7 bg-[#D59344]"
+                        : "w-[7px] bg-white/25 hover:bg-[#D59344]"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
 }
-
-// import Link from "next/link";
-// import { connection } from "next/server";
-
-// import { prisma } from "@/lib/prisma";
-
-// export default async function SolutionsSection() {
-//   await connection();
-
-//   const solutions = await prisma.solution.findMany({
-//     where: {
-//       status: "PUBLISHED",
-//       isFeatured: true,
-//     },
-//     orderBy: [
-//       { sortOrder: "asc" },
-//       { publishedAt: "desc" },
-//     ],
-//     take: 3,
-//     select: {
-//       id: true,
-//       name: true,
-//       slug: true,
-//       summary: true,
-//       logoUrl: true,
-//       coverImageUrl: true,
-//       actionLabel: true,
-//     },
-//   });
-
-//   if (solutions.length === 0) {
-//     return null;
-//   }
-
-//   return (
-//     <section className="bg-slate-50 px-5 py-20 sm:px-8 lg:py-24">
-//       <div className="mx-auto max-w-7xl">
-//         {/* En-tête */}
-//         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-//           <div className="max-w-2xl">
-//             <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#F59E0B]">
-//               Nos solutions
-//             </p>
-
-//             <h2 className="mt-3 text-3xl font-black leading-tight text-[#102A43] sm:text-4xl">
-//               Des solutions adaptées à vos ambitions
-//             </h2>
-
-//             <p className="mt-5 leading-8 text-slate-600">
-//               Découvrez les solutions proposées par BEREM pour répondre à vos
-//               besoins et accompagner vos projets.
-//             </p>
-//           </div>
-
-//           <Link
-//             href="/solutions"
-//             className="inline-flex w-fit items-center gap-2 font-bold text-[#102A43] transition hover:text-[#F59E0B]"
-//           >
-//             Toutes nos solutions
-//             <span aria-hidden="true">→</span>
-//           </Link>
-//         </div>
-
-//         {/* Cartes des solutions */}
-//         <div className="mt-12 grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-//           {solutions.map((solution) => (
-//             <article
-//               key={solution.id}
-//               className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-//             >
-//               <Link
-//                 href={`/solutions/${solution.slug}`}
-//                 className="block"
-//                 aria-label={`Découvrir ${solution.name}`}
-//               >
-//                 <div className="relative flex h-56 items-center justify-center overflow-hidden bg-slate-100">
-//                   {solution.coverImageUrl ? (
-//                     <img
-//                       src={solution.coverImageUrl}
-//                       alt={`Présentation de ${solution.name}`}
-//                       loading="lazy"
-//                       className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-//                     />
-//                   ) : solution.logoUrl ? (
-//                     <img
-//                       src={solution.logoUrl}
-//                       alt={`Logo de ${solution.name}`}
-//                       className="max-h-32 max-w-[70%] object-contain"
-//                     />
-//                   ) : (
-//                     <span className="text-5xl font-black text-[#102A43]">
-//                       {solution.name.charAt(0).toUpperCase()}
-//                     </span>
-//                   )}
-//                 </div>
-
-//                 <div className="p-6">
-//                   {solution.logoUrl && solution.coverImageUrl && (
-//                     <img
-//                       src={solution.logoUrl}
-//                       alt=""
-//                       loading="lazy"
-//                       className="mb-4 h-10 max-w-28 object-contain object-left"
-//                     />
-//                   )}
-
-//                   <h3 className="text-xl font-black text-[#102A43] transition group-hover:text-[#F59E0B]">
-//                     {solution.name}
-//                   </h3>
-
-//                   <p className="mt-3 line-clamp-3 text-sm leading-7 text-slate-600">
-//                     {solution.summary}
-//                   </p>
-
-//                   <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#102A43]">
-//                     {solution.actionLabel || "Découvrir la solution"}
-//                     <span
-//                       aria-hidden="true"
-//                       className="transition-transform group-hover:translate-x-1"
-//                     >
-//                       →
-//                     </span>
-//                   </span>
-//                 </div>
-//               </Link>
-//             </article>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }

@@ -110,7 +110,7 @@ export default function ServicesPage() {
     <main className="overflow-hidden bg-[#FBF7F1] text-[#10161F]">
 
       {/* =====================================================
-          HERO — INTRODUCTION
+          HERO - INTRODUCTION
       ===================================================== */}
 <section className="relative isolate overflow-hidden bg-[#10161F] text-white">
 
@@ -209,7 +209,7 @@ export default function ServicesPage() {
     {/* Bas du Hero */}
     <div className="mt-10 flex items-center justify-between border-t border-white/15 pt-5 sm:mt-12">
       <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 sm:text-xs">
-        BEREM — Bâtiment & ingénierie
+        BEREM - Bâtiment & ingénierie
       </span>
 
       <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 sm:text-xs">
@@ -259,7 +259,7 @@ export default function ServicesPage() {
 
 
       {/* =====================================================
-          SERVICES — PRÉSENTATION ÉDITORIALE
+          SERVICES - PRÉSENTATION ÉDITORIALE
       ===================================================== */}
       <section className="px-5 pb-24 sm:px-8 sm:pb-32 lg:px-10">
         <div className="mx-auto max-w-7xl">
@@ -435,7 +435,7 @@ export default function ServicesPage() {
 
 
       {/* =====================================================
-          CTA — PARLONS DE VOTRE PROJET
+          CTA - PARLONS DE VOTRE PROJET
       ===================================================== */}
 
     </main>

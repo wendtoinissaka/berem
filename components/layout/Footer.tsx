@@ -13,7 +13,7 @@ import CopyrightYear from "./CopyrightYear";
 import FoundationIllustration from "./FoundationIllustration";
 
 // ============================================
-// ICÔNES DES RÉSEAUX SOCIAUX — SVG PERSONNALISÉS
+// ICÔNES DES RÉSEAUX SOCIAUX - SVG PERSONNALISÉS
 // ============================================
 
 const FacebookIcon = () => (
@@ -136,7 +136,7 @@ export default function Footer() {
 <div className="mb-10 flex items-center gap-4 border-t border-white/10 pt-5 sm:mb-12">
   <span className="h-[3px] w-12 bg-[#D59344]" />
   <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/40">
-    BEREM — Génie civil & construction
+    BEREM - Génie civil & construction
   </span>
 </div>
         {/* CONTENU PRINCIPAL */}
@@ -240,7 +240,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* DOMAINES — MASQUÉS SUR MOBILE ET TABLETTE */}
+          {/* DOMAINES - MASQUÉS SUR MOBILE ET TABLETTE */}
           <div className="hidden lg:block">
             <h2 className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.15em] text-[#D59344]">
               <span className="h-px w-5 bg-[#D59344]" />

@@ -100,7 +100,7 @@ export default function Hero() {
             <span className="berem-hero__eyebrow-line" />
 
             <span className="text-[10px] font-bold uppercase tracking-[0.32em] text-[#E6B36F] sm:text-xs">
-              BEREM — Génie civil & construction
+              BEREM - Génie civil & construction
             </span>
 
             <span className="berem-hero__eyebrow-dot" />

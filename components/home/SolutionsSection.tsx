@@ -371,7 +371,7 @@ export default function SolutionsSection() {
                     {/* FOOTER */}
                     <div className="relative mt-auto flex items-center justify-between border-t border-white/10 pt-5 mt-7">
                       <span className="text-[10px] font-medium text-white/35 sm:text-xs">
-                        BEREM — Notre approche
+                        BEREM - Notre approche
                       </span>
 
                       <ArrowRight

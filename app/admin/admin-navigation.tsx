@@ -38,11 +38,11 @@ const navigationItems = [
     href: "/admin/devis",
     icon: FileText,
   },
-  {
-    label: "Services",
-    href: "/admin/services",
-    icon: BriefcaseBusiness,
-  },
+  // {
+  //   label: "Services",
+  //   href: "/admin/services",
+  //   icon: BriefcaseBusiness,
+  // },
   {
     label: "Témoignages",
     href: "/admin/temoignages",

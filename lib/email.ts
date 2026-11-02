@@ -84,7 +84,7 @@ function emailLayout(content: string): string {
       font-family:Arial,Helvetica,sans-serif;color:${BRAND.text};">
 
       <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
-        BEREM — Construisons votre projet avec confiance.
+        BEREM - Construisons votre projet avec confiance.
       </div>
 
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0"
@@ -135,7 +135,7 @@ function emailLayout(content: string): string {
                   <p style="margin:12px 0 0;font-size:12px;
                     color:#94A3B8;">
                     © ${new Date().getFullYear()} ${BRAND.name}
-                    — Tous droits réservés.
+                    - Tous droits réservés.
                   </p>
 
                 </td>
@@ -238,7 +238,7 @@ export async function sendQuoteNotification(
     },
     to: adminEmail,
     replyTo: data.email,
-    subject: `Nouvelle demande de devis — ${data.projectType}`,
+    subject: `Nouvelle demande de devis - ${data.projectType}`,
     text: `
 Nouvelle demande de devis BEREM
 
@@ -346,7 +346,7 @@ export async function sendQuoteConfirmation(
     },
     to: data.email,
     replyTo: process.env.ADMIN_EMAIL || user!,
-    subject: "BEREM — Nous avons bien reçu votre demande de devis",
+    subject: "BEREM - Nous avons bien reçu votre demande de devis",
     text: `
 Bonjour ${data.fullName},
 
@@ -428,7 +428,7 @@ L'équipe BEREM
 //     },
 //     to: adminEmail,
 //     replyTo: data.email,
-//     subject: `Nouvelle demande de devis — ${data.projectType}`,
+//     subject: `Nouvelle demande de devis - ${data.projectType}`,
 //     text: `
 // Nouvelle demande de devis reçue sur le site BEREM.
 

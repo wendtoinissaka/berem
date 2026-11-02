@@ -54,7 +54,7 @@ export default function EntreprisePage() {
     <main className="overflow-hidden bg-[#FBF7F1] text-[#10161F]">
 
       {/* =====================================================
-          HERO — IDENTITÉ DE L'ENTREPRISE
+          HERO - IDENTITÉ DE L'ENTREPRISE
       ===================================================== */}
 <section className="relative isolate overflow-hidden bg-[#10161F] text-white">
 
@@ -149,7 +149,7 @@ export default function EntreprisePage() {
     {/* Signature */}
     <div className="mt-12 flex items-center justify-between border-t border-white/15 pt-5 sm:mt-14">
       <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-[10px]">
-        BEREM — Bâtiment & ingénierie
+        BEREM - Bâtiment & ingénierie
       </span>
 
       <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/35 sm:text-[10px]">
@@ -161,7 +161,7 @@ export default function EntreprisePage() {
 
 
       {/* =====================================================
-          PRÉSENTATION — QUI SOMMES-NOUS ?
+          PRÉSENTATION - QUI SOMMES-NOUS ?
       ===================================================== */}
       <section
         id="presentation"
@@ -315,7 +315,7 @@ export default function EntreprisePage() {
 
 
       {/* =====================================================
-          VALEURS — NOS PRINCIPES
+          VALEURS - NOS PRINCIPES
       ===================================================== */}
       <section className="px-5 py-24 sm:px-8 sm:py-32 lg:px-10">
         <div className="mx-auto max-w-7xl">
@@ -380,7 +380,7 @@ export default function EntreprisePage() {
 
 
       {/* =====================================================
-          CONCLUSION — RÉALISATIONS
+          CONCLUSION - RÉALISATIONS
       ===================================================== */}
       <section className="relative overflow-hidden bg-[#10161F] px-5 py-20 text-white sm:px-8 sm:py-24 lg:px-10">
 

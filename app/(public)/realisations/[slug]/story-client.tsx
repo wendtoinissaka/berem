@@ -142,7 +142,7 @@ export function BeforeAfter({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={after}
-        alt={`${alt} — état actuel`}
+        alt={`${alt} - état actuel`}
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div
@@ -152,7 +152,7 @@ export function BeforeAfter({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={before}
-          alt={`${alt} — début du chantier`}
+          alt={`${alt} - début du chantier`}
           className="absolute inset-0 h-full w-full object-cover"
         />
       </div>

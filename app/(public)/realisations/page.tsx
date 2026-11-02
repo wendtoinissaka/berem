@@ -18,7 +18,7 @@ export default async function RealisationsPage() {
   return (
     <main className="bg-[#FBF7F1]">
       
-{/* HERO — NOS RÉALISATIONS */}
+{/* HERO - NOS RÉALISATIONS */}
 <section className="relative isolate overflow-hidden bg-[#10161F] text-white">
   {/* Décor discret */}
   <div

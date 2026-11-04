@@ -1,3 +1,5 @@
+export const instant = false;
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -143,8 +145,17 @@ export default function DevisPage() {
 
           {/* FORMULAIRE */}
           <div className="min-w-0">
-            <DevisForm />
+            <Suspense
+              fallback={
+                <div className="rounded-2xl border border-[#EAE1D7] bg-white p-8 text-[#647084]">
+                  Chargement du formulaire de devis...
+                </div>
+              }
+            >
+              <DevisForm />
+            </Suspense>
           </div>
+
         </div>
       </section>
     </main>

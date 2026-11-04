@@ -5,9 +5,10 @@ import Composants from "./composants";
 import Galerie from "./galerie";
 import Configurateur from "./configurateur";
 
+export const instant = false;
 
-// TODO : remplacer par le nom réel de l’entreprise
-const ENTREPRISE = "Nom de l’entreprise";
+const ENTREPRISE = "BEREM";
+
 
 const DESCRIPTION =
   "Domotique et bâtiment connecté à Ouagadougou et au Burkina Faso : sécurité, énergie, confort et eau, pensés dès le chantier.";

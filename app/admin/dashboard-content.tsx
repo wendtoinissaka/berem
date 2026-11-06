@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import type { ElementType } from "react";
+import { connection } from "next/server";
 
 function StatCard({
   title,
@@ -117,6 +118,8 @@ const quoteStatusLabels: Record<string, string> = {
 };
 
 export default async function DashboardContent() {
+  await connection();
+  
   const now = new Date();
 
   const [

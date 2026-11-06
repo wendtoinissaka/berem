@@ -67,7 +67,7 @@ async function AdminContent({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-[1600px] flex-col gap-2 px-5 py-5 text-xs text-[#647084] sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
           <p>
             <span className="font-bold text-[#172033]">BEREM</span>
-            {" "}— Espace d'administration
+            {" "}- Espace d'administration
           </p>
 
           <p>Gestion du contenu et suivi des activités</p>

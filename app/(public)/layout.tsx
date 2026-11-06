@@ -2,6 +2,7 @@ import { connection } from "next/server";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { prisma } from "@/lib/prisma";
+import AnnouncementBar from "@/components/layout/AnnouncementBar";
 
 export default async function PublicLayout({
   children,
@@ -28,6 +29,7 @@ export default async function PublicLayout({
 
   return (
     <>
+      <AnnouncementBar />
       <Navbar solutions={solutions} />
       <main className="flex-1">{children}</main>
       <Footer />

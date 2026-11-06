@@ -10,6 +10,7 @@ import {
   BriefcaseBusiness,
   MessageSquareQuote,
   ChartNoAxesCombined,
+  Megaphone,
 } from "lucide-react";
 
 const navigationItems = [
@@ -28,6 +29,11 @@ const navigationItems = [
     href: "/admin/solutions",
     icon: Layers3,
   },
+  {
+  label: "Annonces",
+  href: "/admin/annonces",
+  icon: Megaphone,
+},
   {
     label: "Statistiques",
     href: "/admin/statistiques",

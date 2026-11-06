@@ -48,7 +48,6 @@ enum ProjectStageStatus {
   ON_HOLD
 }
 
-
 model Service {
   id          String   @id @default(cuid())
   title       String
@@ -86,7 +85,6 @@ model Project {
   @@index([archivedAt])
 }
 
-
 model ProjectMedia {
   id        String    @id @default(cuid())
   projectId String
@@ -99,7 +97,6 @@ model ProjectMedia {
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
-
 
 model ProjectStage {
   id          String             @id @default(cuid())
@@ -202,62 +199,59 @@ model QuoteActivity {
   @@index([quoteRequestId, createdAt])
 }
 
-
 model Solution {
-  id               String         @id @default(cuid())
-  name             String
-  slug             String         @unique
-  summary          String
-  description      String         @db.Text
+  id          String @id @default(cuid())
+  name        String
+  slug        String @unique
+  summary     String
+  description String @db.Text
 
-  logoUrl          String?
-  logoPublicId     String?
-  coverImageUrl    String?
-  coverPublicId    String?
+  logoUrl       String?
+  logoPublicId  String?
+  coverImageUrl String?
+  coverPublicId String?
 
-  websiteUrl       String?
-  actionLabel      String?        @default("Découvrir la solution")
+  websiteUrl  String?
+  actionLabel String? @default("Découvrir la solution")
 
-  status           SolutionStatus @default(DRAFT)
-  isFeatured       Boolean        @default(false)
-  sortOrder        Int            @default(0)
-  publishedAt      DateTime?
+  status      SolutionStatus @default(DRAFT)
+  isFeatured  Boolean        @default(false)
+  sortOrder   Int            @default(0)
+  publishedAt DateTime?
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  features         SolutionFeature[]
-  media            SolutionMedia[]
+  features SolutionFeature[]
+  media    SolutionMedia[]
 
   @@index([status, sortOrder])
   @@index([isFeatured, status])
 }
 
-
-
 model SolutionFeature {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
-  description String?  @db.Text
-  sortOrder   Int      @default(0)
+  description String? @db.Text
+  sortOrder   Int     @default(0)
 
-  solutionId  String
-  solution    Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  solutionId String
+  solution   Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade)
 
   @@index([solutionId, sortOrder])
 }
 
 model SolutionMedia {
-  id          String    @id @default(cuid())
-  url         String
-  publicId    String?
-  type        MediaType @default(IMAGE)
-  caption     String?
-  sortOrder   Int       @default(0)
-  createdAt   DateTime  @default(now())
+  id        String    @id @default(cuid())
+  url       String
+  publicId  String?
+  type      MediaType @default(IMAGE)
+  caption   String?
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
 
-  solutionId  String
-  solution    Solution  @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  solutionId String
+  solution   Solution @relation(fields: [solutionId], references: [id], onDelete: Cascade)
 
   @@index([solutionId, sortOrder])
 }
@@ -272,17 +266,55 @@ enum StatisticSource {
 }
 
 model HomeStatistic {
-  id          String           @id @default(cuid())
+  id          String          @id @default(cuid())
   label       String
   description String?
-  source      StatisticSource  @default(MANUAL)
+  source      StatisticSource @default(MANUAL)
   manualValue String?
   suffix      String?
-  isVisible   Boolean          @default(true)
-  sortOrder   Int              @default(0)
+  isVisible   Boolean         @default(true)
+  sortOrder   Int             @default(0)
 
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([isVisible, sortOrder])
+}
+
+enum AnnouncementType {
+  GENERAL
+  NEWS
+  BLOG
+  PROJECT
+  CONSTRUCTION
+  REAL_ESTATE
+  DOMOTICS
+  PROMOTION
+}
+
+model Announcement {
+  id String @id @default(cuid())
+
+  title   String?
+  message String
+  type    AnnouncementType @default(GENERAL)
+
+  targetUrl    String?
+  linkLabel    String?
+  openInNewTab Boolean @default(false)
+
+  isPublished  Boolean @default(false)
+  showInTicker Boolean @default(true)
+  sortOrder    Int     @default(0)
+  priority     Int     @default(0)
+
+  startsAt DateTime?
+  endsAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublished, showInTicker])
+  @@index([startsAt, endsAt])
+  @@index([sortOrder, priority])
 }

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRef } from "react";
 
 const constructionImage =
-  "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=2400&q=90";
+  // "./images/hero2.png";
+  "./images/hero.jpg";
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -128,12 +129,13 @@ export default function Hero() {
           <div className="berem-hero__description mt-9 flex max-w-2xl items-start gap-5 sm:mt-12">
             <span className="mt-1 hidden h-[66px] w-[2px] shrink-0 bg-[#D59344] sm:block" />
 
-            <p className="max-w-xl text-sm leading-7 text-white/75 sm:text-base sm:leading-8 lg:text-lg">
-              De la conception à la réalisation, nous donnons forme à vos
-              projets avec exigence, maîtrise technique et sens du travail
-              bien fait.
+            <p className="max-w-xl text-sm leading-7 text-white/75  text-justify sm:text-base sm:leading-8 lg:text-lg">
+Votre projet au Burkina Faso, suivi où que vous soyez.
+Études, construction, rénovation : BEREM vous accompagne sur le terrain et vous permet de
+suivre l’avancement de vos travaux à distance grâce à MZAKA.
             </p>
           </div>
+          
 
           {/* ACTIONS */}
           <div className="berem-hero__actions mt-10 flex flex-col gap-4 sm:mt-12 sm:flex-row sm:items-center">
@@ -181,13 +183,13 @@ export default function Hero() {
           aria-label="Défiler vers la suite du site"
           className="berem-hero__scroll absolute bottom-10 left-5 inline-flex items-center gap-4 sm:left-8 lg:left-16 xl:left-24"
         >
-          <span className="berem-scroll-circle">
+          {/* <span className="berem-scroll-circle">
             <span />
-          </span>
+          </span> */}
 
-          <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white/65">
+          {/* <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-white/65">
             Explorer le site
-          </span>
+          </span> */}
         </a>
 
         {/* SIGNATURE BASSE */}

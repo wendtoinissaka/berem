@@ -23,11 +23,11 @@ type NavbarProps = {
 
 const navigation = [
   { label: "Accueil", href: "/" },
-  { label: "Entreprise", href: "/entreprise" },
+  { label: "Qui sommes-nous ?", href: "/entreprise" },
   { label: "Services", href: "/services" },
   { label: "Solutions", href: "/solutions", hasDropdown: true },
-  { label: "Réalisations", href: "/realisations" },
-  { label: "Chantiers", href: "/chantiers" },
+  { label: "Nos réalisations", href: "/realisations" },
+  { label: "Chantiers en cours", href: "/chantiers" },
 ];
 
 export default function Navbar({ solutions }: NavbarProps) {
@@ -120,7 +120,7 @@ export default function Navbar({ solutions }: NavbarProps) {
                     onClick={() =>
                       setSolutionsOpen((open) => !open)
                     }
-                    className={`relative flex items-center gap-1.5 py-2 text-[13px] font-semibold transition-colors duration-200 ${
+                    className={`relative flex items-center gap-1.5 py-2 text-[13px]! font-semibold! transition-colors duration-200 ${
                       isSolutionsActive
                         ? "text-berem-orange"
                         : "text-berem-primary hover:text-berem-orange"
@@ -239,7 +239,8 @@ export default function Navbar({ solutions }: NavbarProps) {
           href="/devis"
           className="hidden items-center gap-2 rounded-full bg-berem-orange px-5 py-3 text-[13px] font-bold text-berem-primary transition-all duration-200 hover:bg-berem-orange-hover lg:inline-flex"
         >
-          Demander un devis
+          {/* Demander un devis */}
+          Présenter mon projet
           <ArrowUpRight size={16} strokeWidth={2} />
         </Link>
 
@@ -286,7 +287,7 @@ export default function Navbar({ solutions }: NavbarProps) {
                       onClick={() =>
                         setSolutionsOpen((open) => !open)
                       }
-                      className={`flex w-full items-center justify-between py-2 text-sm font-semibold ${
+                      className={`flex w-full items-center justify-between py-2 text-sm! leading-5! font-semibold! ${
                         isSolutionsActive
                           ? "text-berem-orange"
                           : "text-berem-primary"

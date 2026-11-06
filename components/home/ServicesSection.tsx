@@ -18,7 +18,7 @@ const services = [
     number: "01",
     title: "Génie civil",
     description:
-      "Nous vous accompagnons dans vos projets de construction, de l’étude technique à la réalisation, en proposant des solutions adaptées aux contraintes du terrain, aux normes en vigueur et à votre budget. Notre priorité : garantir des ouvrages durables, sûrs et de qualité.",
+      "Des solutions d’ingénierie adaptées à vos ouvrages, aux contraintes du terrain et aux exigences de votre projet.",
     detail: "Expertise & ingénierie",
     icon: DraftingCompass,
   },
@@ -26,7 +26,7 @@ const services = [
     number: "02",
     title: "Construction",
     description:
-      "Nous réalisons vos projets de bâtiment (villas, duplex, immeubles) en assurant la coordination des travaux et la qualité d’exécution. Grâce à notre application MZAKA, vous bénéficiez également d’un suivi de chantier à distance, en toute transparence.",
+      "Des solutions d’ingénierie adaptées à vos ouvrages, aux contraintes du terrain et aux exigences de votre projet.",
     detail: "Bâtiment & ouvrages",
     icon: Building2,
   },
@@ -34,10 +34,27 @@ const services = [
     number: "03",
     title: "Études techniques",
     description:
-      "Nous réalisons les études de faisabilité, de sol, de dimensionnement et les plans d’exécution, afin de garantir la sécurité, la conformité et la durabilité de vos ouvrages, tout en optimisant les coûts.",
+      "Faisabilité, dimensionnement et plans d’exécution : nous préparons les bases techniques de votre projet pour guider sa réalisation.",
     detail: "Analyse & conception",
     icon: Ruler,
   },
+    {
+    number: "04",
+    title: "Rénovation, si proposée comme service distinct",
+    description:
+      "Nous réhabilitons et transformons vos bâtiments pour améliorer leur confort, leur fonctionnalité et leur durabilité.",
+    detail: "Analyse & conception",
+    icon: Ruler,
+  },
+    {
+    number: "05",
+    title: "Suivi de chantier",
+    description:
+      "Un accompagnement sur le terrain et des comptes rendus pour vous aider à suivre l’exécution et l’évolution de vos travaux.",
+    detail: "Analyse & conception",
+    icon: Ruler,
+  },
+  
 ];
 
 export default function ServicesSection() {

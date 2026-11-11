@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { MediaType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { cloudinary } from "@/lib/cloudinary";
+import { getCloudinary } from "@/lib/cloudinary";
 
 function readText(formData: FormData, name: string) {
   return String(formData.get(name) ?? "").trim();
@@ -17,6 +17,7 @@ function readText(formData: FormData, name: string) {
  */
 export async function ensureSolutionDraft(formData: FormData) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const existingId = readText(formData, "solutionId");
 
@@ -62,6 +63,7 @@ export async function createSolutionMediaUploadSignature(
   formData: FormData
 ) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const category = readText(formData, "category") || "galerie";
@@ -111,6 +113,7 @@ export async function createSolutionMediaUploadSignature(
  */
 export async function saveUploadedSolutionMedia(formData: FormData) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const url = readText(formData, "url");
@@ -199,6 +202,7 @@ export async function saveUploadedSolutionBrandImage(
   formData: FormData
 ) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const url = readText(formData, "url");

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { MediaType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { cloudinary } from "@/lib/cloudinary";
+import { getCloudinary } from "@/lib/cloudinary";
 
 function readText(formData: FormData, name: string) {
   return String(formData.get(name) ?? "").trim();
@@ -12,6 +12,7 @@ function readText(formData: FormData, name: string) {
 
 export async function createMediaUploadSignature(formData: FormData) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const projectId = readText(formData, "projectId");
   const updateId = readText(formData, "updateId");
@@ -56,7 +57,7 @@ export async function createMediaUploadSignature(formData: FormData) {
 
 export async function saveUploadedProjectMedia(formData: FormData) {
   await requireAdmin();
-
+  const cloudinary = getCloudinary();
   const projectId = readText(formData, "projectId");
   const updateId = readText(formData, "updateId");
   const url = readText(formData, "url");
@@ -165,7 +166,7 @@ await prisma.projectUpdateMedia.create({
  */
 export async function createProjectMediaUploadSignature(formData: FormData) {
   await requireAdmin();
-
+  const cloudinary = getCloudinary();
   const projectId = readText(formData, "projectId");
 
   if (!projectId) {
@@ -219,7 +220,7 @@ export async function createProjectMediaUploadSignature(formData: FormData) {
  */
 export async function saveUploadedProjectLevelMedia(formData: FormData) {
   await requireAdmin();
-
+  const cloudinary = getCloudinary();
   const projectId = readText(formData, "projectId");
   const url = readText(formData, "url");
   const publicId = readText(formData, "publicId");
@@ -323,7 +324,7 @@ data: {
  */
 export async function moveProjectMedia(formData: FormData) {
   await requireAdmin();
-
+  const cloudinary = getCloudinary();
   const projectId = readText(formData, "projectId");
   const mediaId = readText(formData, "mediaId");
   const direction = readText(formData, "direction");
@@ -406,7 +407,7 @@ export async function moveProjectMedia(formData: FormData) {
  */
 export async function deleteProjectMedia(formData: FormData) {
   await requireAdmin();
-
+  const cloudinary = getCloudinary();
   const projectId = readText(formData, "projectId");
   const mediaId = readText(formData, "mediaId");
 
@@ -493,7 +494,7 @@ export async function deleteProjectMedia(formData: FormData) {
  */
 export async function deleteProjectUpdateMedia(formData: FormData) {
   await requireAdmin();
-
+  const cloudinary = getCloudinary();
   const projectId = readText(formData, "projectId");
   const updateId = readText(formData, "updateId");
   const mediaId = readText(formData, "mediaId");

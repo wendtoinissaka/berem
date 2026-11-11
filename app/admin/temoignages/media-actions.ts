@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAdmin } from "@/lib/auth";
-import { cloudinary } from "@/lib/cloudinary";
+import { getCloudinary } from "@/lib/cloudinary";
 
 function readText(formData: FormData, name: string) {
   return String(formData.get(name) ?? "").trim();
@@ -12,9 +12,11 @@ function readText(formData: FormData, name: string) {
  * une photo de témoignage vers Cloudinary.
  */
 export async function createTestimonialPhotoUploadSignature(
+  
   formData: FormData
 ) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const testimonialId = readText(formData, "testimonialId");
 
@@ -52,7 +54,7 @@ export async function createTestimonialPhotoUploadSignature(
  */
 export async function verifyTestimonialPhoto(formData: FormData) {
   await requireAdmin();
-
+  const cloudinary = getCloudinary();
   const url = readText(formData, "url");
   const publicId = readText(formData, "publicId");
 

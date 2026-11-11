@@ -1,24 +1,63 @@
 import "server-only";
 import nodemailer from "nodemailer";
 
-const host = process.env.SMTP_HOST;
-const port = Number(process.env.SMTP_PORT);
-const user = process.env.SMTP_USER;
-const password = process.env.SMTP_PASSWORD;
+type SmtpConfig = {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+};
 
-if (!host || !port || !user || !password) {
-  throw new Error("La configuration SMTP est incomplète.");
+import type { Transporter } from "nodemailer";
+
+let transporter: Transporter | null = null;
+
+/**
+ * Récupère et valide la configuration SMTP uniquement
+ * lorsqu'un envoi ou une vérification est demandé.
+ */
+function getSmtpConfig(): SmtpConfig {
+  const host = process.env.SMTP_HOST?.trim();
+  const port = Number(process.env.SMTP_PORT);
+  const user = process.env.SMTP_USER?.trim();
+  const password = process.env.SMTP_PASSWORD;
+
+  if (
+    !host ||
+    !Number.isInteger(port) ||
+    port <= 0 ||
+    !user ||
+    !password
+  ) {
+    throw new Error("La configuration SMTP est incomplète.");
+  }
+
+  return { host, port, user, password };
 }
 
-const transporter = nodemailer.createTransport({
-  host,
-  port,
-  secure: port === 465,
-  auth: {
-    user,
-    pass: password,
-  },
-});
+/**
+ * Initialise Nodemailer à la première utilisation.
+ */
+function getMailTransport() {
+  const config = getSmtpConfig();
+
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      host: config.host,
+      port: config.port,
+      secure: config.port === 465,
+      auth: {
+        user: config.user,
+        pass: config.password,
+      },
+    });
+  }
+
+  return {
+    transporter,
+    user: config.user,
+  };
+}
 
 const BRAND = {
   name: "BEREM",
@@ -42,6 +81,7 @@ type QuoteEmailData = {
 };
 
 export async function verifyEmailConnection() {
+  const { transporter } = getMailTransport();
   await transporter.verify();
 }
 
@@ -230,11 +270,11 @@ export async function sendQuoteNotification(
       dans sa demande.
     </p>
   `);
-
+  const { transporter, user } = getMailTransport();
   await transporter.sendMail({
     from: {
       name: "BEREM",
-      address: user!,
+      address: user,
     },
     to: adminEmail,
     replyTo: data.email,
@@ -339,10 +379,11 @@ export async function sendQuoteConfirmation(
     </p>
   `);
 
+  const { transporter, user } = getMailTransport();
   await transporter.sendMail({
     from: {
       name: "BEREM",
-      address: user!,
+      address: user,
     },
     to: data.email,
     replyTo: process.env.ADMIN_EMAIL || user!,

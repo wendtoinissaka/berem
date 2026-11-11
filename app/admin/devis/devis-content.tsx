@@ -150,13 +150,12 @@ export default async function DevisContent({
     ...(q
       ? {
           OR: [
-            { fullName: { contains: q, mode: "insensitive" } },
-            { email: { contains: q, mode: "insensitive" } },
+            { fullName: { contains: q } },
+            { email: { contains: q } },
             { phone: { contains: q } },
-            { projectType: { contains: q, mode: "insensitive" } },
-            { location: { contains: q, mode: "insensitive" } },
-            { company: { contains: q, mode: "insensitive" } },
-          ],
+            { projectType: { contains: q } },
+            { location: { contains: q } },
+          ]
         }
       : {}),
   };

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { MediaType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-import { cloudinary } from "@/lib/cloudinary";
+import { getCloudinary } from "@/lib/cloudinary"
 
 type MediaCategory = "galerie" | "logo" | "couverture";
 type CloudinaryResourceType = "image" | "video";
@@ -31,6 +31,7 @@ function assertResourceType(
 }
 
 function validateCloudinaryUrl(url: string) {
+  const cloudinary = getCloudinary();
   let parsedUrl: URL;
 
   try {
@@ -86,6 +87,8 @@ async function verifyCloudinaryAsset({
   publicId: string;
   resourceType: CloudinaryResourceType;
 }) {
+    const cloudinary = getCloudinary();
+
   validatePublicId(publicId, solutionId, category);
   validateCloudinaryUrl(url);
 
@@ -115,6 +118,7 @@ async function destroyCloudinaryAsset(
 ) {
   if (!publicId) return;
 
+    const cloudinary = getCloudinary();
   try {
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,
@@ -152,6 +156,7 @@ function refreshSolutionPages(slug?: string) {
  */
 export async function ensureSolutionDraft(formData: FormData) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const existingId = readText(formData, "solutionId");
 
@@ -197,6 +202,7 @@ export async function createSolutionMediaUploadSignature(
   formData: FormData,
 ) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const category = readText(formData, "category") || "galerie";
@@ -244,6 +250,7 @@ export async function createSolutionMediaUploadSignature(
  */
 export async function saveUploadedSolutionMedia(formData: FormData) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const url = readText(formData, "url");
@@ -308,6 +315,7 @@ export async function saveUploadedSolutionMedia(formData: FormData) {
  */
 export async function deleteSolutionMedia(formData: FormData) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const mediaId = readText(formData, "mediaId");
@@ -358,6 +366,7 @@ export async function saveUploadedSolutionBrandImage(
   formData: FormData,
 ) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const url = readText(formData, "url");
@@ -436,6 +445,7 @@ export async function saveUploadedSolutionBrandImage(
  */
 export async function deleteSolutionBrandImage(formData: FormData) {
   await requireAdmin();
+  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const category = readText(formData, "category");

@@ -56,7 +56,7 @@ export default async function AdminProjectsPage() {
           <p className="text-sm font-bold uppercase tracking-widest text-amber-600">
             Administration
           </p>
-          <h1 className="mt-2 text-3xl font-black text-[#102A43]">
+          <h1 className="mt-2 text-3xl font-black text-[#10161F]">
             Gestion des chantiers
           </h1>
           <p className="mt-2 text-slate-600">
@@ -169,7 +169,7 @@ export default async function AdminProjectsPage() {
                       aria-valuenow={project.progress}
                     >
                       <div
-                        className="h-full rounded-full bg-amber-500"
+                        className="h-full rounded-full bg-[#D59344]"
                         style={{ width: `${project.progress}%` }}
                       />
                     </div>

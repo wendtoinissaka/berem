@@ -36,7 +36,6 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:-berem}"
-      SHADOW_DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/berem_shadow"
 
       # Initialisation du compte administrateur
       ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL doit être défini}
@@ -52,6 +51,7 @@ services:
         condition: service_healthy
 
     restart: "no"
+
   # ==========================================
   # APPLICATION NEXT.JS
   # ==========================================
@@ -63,6 +63,7 @@ services:
       args:
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL doit être défini}
         NEXT_PUBLIC_WHATSAPP_NUMBER: ${NEXT_PUBLIC_WHATSAPP_NUMBER:?NEXT_PUBLIC_WHATSAPP_NUMBER doit être défini}
+
     environment:
       NODE_ENV: production
 
@@ -76,6 +77,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD doit être défini}
 
       # Administration
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL doit être défini}
       SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET doit être défini}
 
       # Configuration API
@@ -89,10 +91,10 @@ services:
       # Serveur Next.js
       PORT: 3000
       HOSTNAME: "0.0.0.0"
-      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      SITE_URL: ${SITE_URL:-https://berem.bf}
 
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
 
     depends_on:
       migrate:

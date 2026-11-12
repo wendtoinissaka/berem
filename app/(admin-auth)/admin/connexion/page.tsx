@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { loginAdmin } from "@/lib/actions/admin-auth";
 
 export const metadata: Metadata = {
   title: "Connexion administrateur",
-  robots: {
-    index: false,
-    follow: false,
-  },
+  robots: { index: false, follow: false },
 };
 
 type LoginPageProps = {
-  searchParams: Promise<{ erreur?: string }>;
+  searchParams: Promise<{ erreur?: string; succes?: string }>;
 };
 
 function LoginForm({
   erreur,
+  succes,
 }: {
   erreur?: string;
+  succes?: string;
 }) {
   return (
     <>
@@ -28,19 +28,21 @@ function LoginForm({
         >
           {erreur === "identifiants"
             ? "Adresse e-mail ou mot de passe incorrect."
-            : "La configuration de l'administration est incomplète."}
+            : "Une erreur est survenue. Réessaie."}
+        </div>
+      )}
+
+      {succes === "mot-de-passe" && (
+        <div className="mb-5 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-700">
+          Ton mot de passe a été modifié. Tu peux maintenant te connecter.
         </div>
       )}
 
       <form action={loginAdmin} className="space-y-5">
         <div>
-          <label
-            htmlFor="email"
-            className="mb-2 block text-sm font-medium text-slate-700"
-          >
+          <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-700">
             Adresse e-mail
           </label>
-
           <input
             id="email"
             name="email"
@@ -53,13 +55,9 @@ function LoginForm({
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="mb-2 block text-sm font-medium text-slate-700"
-          >
+          <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-700">
             Mot de passe
           </label>
-
           <input
             id="password"
             name="password"
@@ -69,6 +67,15 @@ function LoginForm({
             className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
             placeholder="Ton mot de passe"
           />
+        </div>
+
+        <div className="text-right">
+          <Link
+            href="/admin/mot-de-passe-oublie"
+            className="text-sm font-medium text-amber-700 hover:text-amber-600"
+          >
+            Mot de passe oublié ?
+          </Link>
         </div>
 
         <button
@@ -82,9 +89,7 @@ function LoginForm({
   );
 }
 
-export default function AdminLoginPage({
-  searchParams,
-}: LoginPageProps) {
+export default function AdminLoginPage({ searchParams }: LoginPageProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12">
       <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
@@ -92,23 +97,15 @@ export default function AdminLoginPage({
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-amber-600">
             BEREM
           </p>
-
           <h1 className="mt-3 text-3xl font-bold text-slate-900">
             Administration
           </h1>
-
           <p className="mt-2 text-sm text-slate-500">
             Connecte-toi pour gérer les activités du site.
           </p>
         </div>
 
-        <Suspense
-          fallback={
-            <p className="text-sm text-slate-500">
-              Chargement du formulaire...
-            </p>
-          }
-        >
+        <Suspense fallback={<p className="text-sm text-slate-500">Chargement du formulaire...</p>}>
           <LoginFormWrapper searchParams={searchParams} />
         </Suspense>
 
@@ -120,10 +117,7 @@ export default function AdminLoginPage({
   );
 }
 
-async function LoginFormWrapper({
-  searchParams,
-}: LoginPageProps) {
-  const { erreur } = await searchParams;
-
-  return <LoginForm erreur={erreur} />;
+async function LoginFormWrapper({ searchParams }: LoginPageProps) {
+  const { erreur, succes } = await searchParams;
+  return <LoginForm erreur={erreur} succes={succes} />;
 }

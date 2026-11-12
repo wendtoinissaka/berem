@@ -410,80 +410,49 @@ L'équipe BEREM
   });
 }
 
+export async function sendPasswordResetEmail(
+  email: string,
+  resetUrl: string,
+) {
+  const safeUrl = escapeHtml(resetUrl);
 
-// import "server-only";
-// import nodemailer from "nodemailer";
+  const html = emailLayout(`
+    <h1 style="margin:0 0 20px;font-size:25px;color:${BRAND.navy};">
+      Réinitialisation de votre mot de passe
+    </h1>
 
-// const host = process.env.SMTP_HOST;
-// const port = Number(process.env.SMTP_PORT);
-// const user = process.env.SMTP_USER;
-// const password = process.env.SMTP_PASSWORD;
+    <p style="font-size:15px;line-height:26px;">
+      Une demande de réinitialisation du mot de passe de votre
+      espace administrateur BEREM a été effectuée.
+    </p>
 
-// if (!host || !port || !user || !password) {
-//   throw new Error(
-//     "La configuration SMTP est incomplète. Vérifiez les variables SMTP dans .env."
-//   );
-// }
+    <p style="font-size:15px;line-height:26px;">
+      Cliquez sur le bouton ci-dessous pour choisir un nouveau
+      mot de passe. Ce lien est valable pendant 20 minutes.
+    </p>
 
-// const transporter = nodemailer.createTransport({
-//   host,
-//   port,
-//   secure: port === 465,
-//   auth: {
-//     user,
-//     pass: password,
-//   },
-// });
+    <div style="margin:30px 0;text-align:center;">
+      <a href="${safeUrl}"
+        style="display:inline-block;padding:15px 25px;
+        background:${BRAND.turquoise};color:#FFFFFF;
+        text-decoration:none;border-radius:8px;font-weight:bold;">
+        Réinitialiser mon mot de passe
+      </a>
+    </div>
 
-// export async function verifyEmailConnection() {
-//   await transporter.verify();
-// }
+    <p style="font-size:13px;line-height:22px;color:${BRAND.muted};">
+      Si vous n'avez pas effectué cette demande, ignorez simplement
+      cet e-mail. Votre mot de passe actuel reste inchangé.
+    </p>
+  `);
 
-// export async function sendQuoteNotification(data: {
-//   fullName: string;
-//   email: string;
-//   phone: string;
-//   company?: string | null;
-//   projectType: string;
-//   location: string;
-//   description: string;
-//   estimatedBudget?: string | null;
-//   desiredDate?: Date | null;
-// }) {
-//   const adminEmail = process.env.ADMIN_EMAIL;
+  const { transporter, user } = getMailTransport();
 
-//   if (!adminEmail) {
-//     throw new Error("La variable ADMIN_EMAIL est manquante.");
-//   }
-
-//   const date = data.desiredDate
-//     ? data.desiredDate.toLocaleDateString("fr-FR", {
-//         timeZone: "UTC",
-//       })
-//     : "Non renseignée";
-
-//   await transporter.sendMail({
-//     from: {
-//       name: "BEREM",
-//       address: user,
-//     },
-//     to: adminEmail,
-//     replyTo: data.email,
-//     subject: `Nouvelle demande de devis - ${data.projectType}`,
-//     text: `
-// Nouvelle demande de devis reçue sur le site BEREM.
-
-// Nom : ${data.fullName}
-// Entreprise : ${data.company || "Non renseignée"}
-// E-mail : ${data.email}
-// Téléphone : ${data.phone}
-// Type de projet : ${data.projectType}
-// Localisation : ${data.location}
-// Budget estimé : ${data.estimatedBudget || "Non renseigné"}
-// Date souhaitée : ${date}
-
-// Description du projet :
-// ${data.description}
-//     `.trim(),
-//   });
-// }
+  await transporter.sendMail({
+    from: { name: "BEREM", address: user },
+    to: email,
+    subject: "BEREM - Réinitialisation de votre mot de passe",
+    text: `Pour réinitialiser votre mot de passe BEREM, ouvrez ce lien : ${resetUrl}\n\nCe lien expire dans 20 minutes.`,
+    html,
+  });
+}

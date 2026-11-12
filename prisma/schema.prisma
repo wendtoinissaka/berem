@@ -318,3 +318,30 @@ model Announcement {
   @@index([startsAt, endsAt])
   @@index([sortOrder, priority])
 }
+
+
+model Admin {
+  id                 String   @id @default("main")
+  email              String   @unique
+  passwordHash       String
+  mustChangePassword Boolean  @default(true)
+  sessionVersion     Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  resetTokens        PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  adminId   String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([expiresAt])
+}

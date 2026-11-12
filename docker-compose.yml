@@ -1,11 +1,14 @@
 services:
+  # ==========================================
+  # BASE DE DONNÉES MYSQL
+  # ==========================================
   db:
     image: mysql:8.4
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE:?MYSQL_DATABASE is required}
-      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER is required}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-berem}
+      MYSQL_USER: ${MYSQL_USER:?MYSQL_USER doit être défini}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD doit être défini}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD doit être défini}
     volumes:
       - berem_mysql_data:/var/lib/mysql
     healthcheck:
@@ -18,36 +21,87 @@ services:
       start_period: 20s
     restart: unless-stopped
 
+  # ==========================================
+  # MIGRATIONS PRISMA + INITIALISATION ADMIN
+  # ==========================================
   migrate:
     build:
       context: .
       dockerfile: Dockerfile
       target: build
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL doit être défini}
+        NEXT_PUBLIC_WHATSAPP_NUMBER: ${NEXT_PUBLIC_WHATSAPP_NUMBER:?NEXT_PUBLIC_WHATSAPP_NUMBER doit être défini}
+
     environment:
       NODE_ENV: production
-      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
-    command: ["pnpm", "db:deploy"]
+      DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:-berem}"
+      SHADOW_DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/berem_shadow"
+
+      # Initialisation du compte administrateur
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL doit être défini}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD doit être défini}
+
+    command:
+      - sh
+      - -c
+      - pnpm db:deploy && pnpm admin:create
+
     depends_on:
       db:
         condition: service_healthy
-    restart: "no"
 
+    restart: "no"
+  # ==========================================
+  # APPLICATION NEXT.JS
+  # ==========================================
   app:
     build:
       context: .
       dockerfile: Dockerfile
       target: runner
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?NEXT_PUBLIC_SITE_URL doit être défini}
+        NEXT_PUBLIC_WHATSAPP_NUMBER: ${NEXT_PUBLIC_WHATSAPP_NUMBER:?NEXT_PUBLIC_WHATSAPP_NUMBER doit être défini}
     environment:
       NODE_ENV: production
-      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+
+      # Base de données
+      DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE:-berem}"
+
+      # Configuration SMTP
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST doit être défini}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:?SMTP_USER doit être défini}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?SMTP_PASSWORD doit être défini}
+
+      # Administration
+      SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET doit être défini}
+
+      # Configuration API
+      KEY_NAME: ${KEY_NAME:-berem}
+      API_KEY: ${API_KEY:?API_KEY doit être défini}
+      API_SECRET: ${API_SECRET:?API_SECRET doit être défini}
+
+      # Cloudinary
+      CLOUDINARY_URL: ${CLOUDINARY_URL:?CLOUDINARY_URL doit être défini}
+
+      # Serveur Next.js
       PORT: 3000
       HOSTNAME: "0.0.0.0"
-    expose:
-      - "3000"
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+
+    ports:
+      - "3000:3000"
+
     depends_on:
       migrate:
         condition: service_completed_successfully
+
     restart: unless-stopped
 
+# ==========================================
+# VOLUMES PERSISTANTS
+# ==========================================
 volumes:
   berem_mysql_data:

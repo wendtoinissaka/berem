@@ -36,6 +36,13 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Variables publiques intégrées pendant le build Next.js
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_WHATSAPP_NUMBER
+
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_WHATSAPP_NUMBER=$NEXT_PUBLIC_WHATSAPP_NUMBER
+
 # URL temporaire utilisée uniquement pendant le build
 ENV DATABASE_URL="mysql://build:build@127.0.0.1:3306/berem"
 

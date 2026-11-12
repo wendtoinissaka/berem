@@ -1,18 +1,25 @@
+# Dépendances et builds
 node_modules
 .next
+generated
+coverage
+dist
+
+# Git
 .git
 .gitignore
 
+# Variables d'environnement et secrets
 .env
 .env.*
 !.env.example
 
-generated
-coverage
-dist
+# Journaux
 *.log
 
+# Fichiers système
+.DS_Store
+
+# Fichiers parasites à la racine
 cloudinary
 server-only
-
-.DS_Store

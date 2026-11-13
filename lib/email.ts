@@ -1,5 +1,6 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import type { Transporter } from "nodemailer";
 
 type SmtpConfig = {
   host: string;
@@ -8,13 +9,12 @@ type SmtpConfig = {
   password: string;
 };
 
-import type { Transporter } from "nodemailer";
+const FROM_EMAIL = "contact@berem.bf";
 
 let transporter: Transporter | null = null;
 
 /**
- * Récupère et valide la configuration SMTP uniquement
- * lorsqu'un envoi ou une vérification est demandé.
+ * Récupère et valide la configuration SMTP.
  */
 function getSmtpConfig(): SmtpConfig {
   const host = process.env.SMTP_HOST?.trim();
@@ -22,13 +22,7 @@ function getSmtpConfig(): SmtpConfig {
   const user = process.env.SMTP_USER?.trim();
   const password = process.env.SMTP_PASSWORD;
 
-  if (
-    !host ||
-    !Number.isInteger(port) ||
-    port <= 0 ||
-    !user ||
-    !password
-  ) {
+  if (!host || !Number.isInteger(port) || port <= 0 || !user || !password) {
     throw new Error("La configuration SMTP est incomplète.");
   }
 
@@ -46,6 +40,7 @@ function getMailTransport() {
       host: config.host,
       port: config.port,
       secure: config.port === 465,
+      requireTLS: config.port === 587,
       auth: {
         user: config.user,
         pass: config.password,
@@ -53,10 +48,7 @@ function getMailTransport() {
     });
   }
 
-  return {
-    transporter,
-    user: config.user,
-  };
+  return { transporter };
 }
 
 const BRAND = {
@@ -86,8 +78,7 @@ export async function verifyEmailConnection() {
 }
 
 /**
- * Échappe les caractères HTML pour éviter d'interpréter
- * les informations saisies par le client comme du HTML.
+ * Échappe les caractères HTML.
  */
 function escapeHtml(value: string): string {
   return value
@@ -195,7 +186,7 @@ function emailLayout(content: string): string {
  * Notification de nouvelle demande destinée à BEREM.
  */
 export async function sendQuoteNotification(
-  data: QuoteEmailData & { requestId: string }
+  data: QuoteEmailData & { requestId: string },
 ) {
   const adminEmail = process.env.ADMIN_EMAIL;
 
@@ -247,7 +238,7 @@ export async function sendQuoteNotification(
                 overflow-wrap:anywhere;">
                 ${escapeHtml(value)}
               </td>
-            </tr>`
+            </tr>`,
         )
         .join("")}
 
@@ -270,13 +261,19 @@ export async function sendQuoteNotification(
       dans sa demande.
     </p>
   `);
-  const { transporter, user } = getMailTransport();
+
+  const { transporter } = getMailTransport();
+
   await transporter.sendMail({
     from: {
       name: "BEREM",
-      address: user,
+      address: FROM_EMAIL,
     },
-    to: adminEmail,
+    envelope: {
+      from: FROM_EMAIL,
+      to: adminEmail.trim(),
+    },
+    to: adminEmail.trim(),
     replyTo: data.email,
     subject: `Nouvelle demande de devis - ${data.projectType}`,
     text: `
@@ -303,7 +300,7 @@ ${data.description}
  * Accusé de réception destiné au client.
  */
 export async function sendQuoteConfirmation(
-  data: QuoteEmailData & { requestId: string }
+  data: QuoteEmailData & { requestId: string },
 ) {
   const safeName = escapeHtml(data.fullName);
   const safeProjectType = escapeHtml(data.projectType);
@@ -379,14 +376,19 @@ export async function sendQuoteConfirmation(
     </p>
   `);
 
-  const { transporter, user } = getMailTransport();
+  const { transporter } = getMailTransport();
+
   await transporter.sendMail({
     from: {
       name: "BEREM",
-      address: user,
+      address: FROM_EMAIL,
+    },
+    envelope: {
+      from: FROM_EMAIL,
+      to: data.email,
     },
     to: data.email,
-    replyTo: process.env.ADMIN_EMAIL || user!,
+    replyTo: process.env.ADMIN_EMAIL?.trim() || FROM_EMAIL,
     subject: "BEREM - Nous avons bien reçu votre demande de devis",
     text: `
 Bonjour ${data.fullName},
@@ -410,10 +412,10 @@ L'équipe BEREM
   });
 }
 
-export async function sendPasswordResetEmail(
-  email: string,
-  resetUrl: string,
-) {
+/**
+ * E-mail de réinitialisation du mot de passe administrateur.
+ */
+export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   const safeUrl = escapeHtml(resetUrl);
 
   const html = emailLayout(`
@@ -446,10 +448,17 @@ export async function sendPasswordResetEmail(
     </p>
   `);
 
-  const { transporter, user } = getMailTransport();
+  const { transporter } = getMailTransport();
 
   await transporter.sendMail({
-    from: { name: "BEREM", address: user },
+    from: {
+      name: "BEREM",
+      address: FROM_EMAIL,
+    },
+    envelope: {
+      from: FROM_EMAIL,
+      to: email,
+    },
     to: email,
     subject: "BEREM - Réinitialisation de votre mot de passe",
     text: `Pour réinitialiser votre mot de passe BEREM, ouvrez ce lien : ${resetUrl}\n\nCe lien expire dans 20 minutes.`,

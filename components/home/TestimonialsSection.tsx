@@ -3,11 +3,15 @@ import { MessageSquareQuote } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import TestimonialsList from "@/components/home/TestimonialsList";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+import { connection } from "next/server";
 
 const MAX_TESTIMONIALS = 24;
 
 export default async function TestimonialsSection() {
+  await connection();
+
   const testimonials = await prisma.testimonial.findMany({
+
     where: {
       isPublished: true,
     },

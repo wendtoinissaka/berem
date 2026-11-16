@@ -9,9 +9,13 @@ import {
 import ProjectCard from "@/components/projects/ProjectCard";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getOngoingProjects } from "@/lib/data/projects";
+import { connection } from "next/server";
 
 export default async function ChantiersSection() {
+  await connection();
+  
   const projects = await getOngoingProjects();
+
   const featuredProjects = projects.slice(0, 3);
 
   return (

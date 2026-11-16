@@ -4,8 +4,11 @@ import { ArrowUpRight, MoveRight } from "lucide-react";
 import ProjectCard from "@/components/projects/ProjectCard";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { getCompletedProjects } from "@/lib/data/projects";
+import { connection } from "next/server";
 
 export default async function ProjectsSection() {
+  await connection();
+
   const projects = await getCompletedProjects();
   const featuredProjects = projects.slice(0, 3);
 

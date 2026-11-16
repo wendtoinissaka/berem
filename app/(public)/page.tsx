@@ -1,4 +1,4 @@
-export const instant = false;
+import { Suspense } from "react";
 
 import Hero from "@/components/home/Hero";
 import ServicesSection from "@/components/home/ServicesSection";
@@ -6,9 +6,16 @@ import SolutionsSection from "@/components/home/SolutionsSection";
 import ProjectsSection from "@/components/home/ProjectsSection";
 import ChantiersSection from "@/components/home/ChantiersSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
-import StatsSection from "@/components/home/StatsSection";
-import ContactSection from "@/components/home/ContactSection";
 import HomeSolutionsSection from "@/components/home/HomeSolutionsSection";
+
+function SectionFallback() {
+  return (
+    <div
+      aria-hidden="true"
+      className="min-h-[300px] animate-pulse bg-[#FBF7F1]"
+    />
+  );
+}
 
 export default function Home() {
   return (
@@ -17,43 +24,94 @@ export default function Home() {
 
       <ServicesSection />
 
-      <ProjectsSection />
+      <Suspense fallback={<SectionFallback />}>
+        <ProjectsSection />
+      </Suspense>
 
-      <ChantiersSection />
+      <Suspense fallback={<SectionFallback />}>
+        <ChantiersSection />
+      </Suspense>
 
-      <HomeSolutionsSection/>
-      <TestimonialsSection />
+      <Suspense fallback={<SectionFallback />}>
+        <HomeSolutionsSection />
+      </Suspense>
+
+      <Suspense fallback={<SectionFallback />}>
+        <TestimonialsSection />
+      </Suspense>
 
       <SolutionsSection />
-
-      {/* <StatsSection /> */}
-
-      {/* <ContactSection /> */}
     </>
   );
 }
 
 
+// import { Suspense } from "react";
 
-// import Image from "next/image";
+// import Hero from "@/components/home/Hero"; 
+// import ServicesSection from "@/components/home/ServicesSection"; 
+// import ProjectsSection from "@/components/home/ProjectsSection"; 
+// import ChantiersSection from "@/components/home/ChantiersSection"; 
+// import TestimonialsSection from "@/components/home/TestimonialsSection"; 
+// import SolutionsSection from "@/components/home/SolutionsSection"; 
+// import HomeSolutionsSection from "@/components/home/HomeSolutionsSection";
+
+// export const instant = false;
+
+// export default function Home() { return ( <> <Hero />
+
+//   <ServicesSection />
+
+//   <ProjectsSection />
+
+//   <ChantiersSection />
+
+//   <Suspense fallback={null}>
+//     <HomeSolutionsSection />
+//   </Suspense>
+
+//   <Suspense fallback={null}>
+//     <TestimonialsSection />
+//   </Suspense>
+
+//   <SolutionsSection />
+// </>
+
+
+// ); }
+
+
+// export const instant = false;
+
+// import Hero from "@/components/home/Hero";
+// import ServicesSection from "@/components/home/ServicesSection";
+// import SolutionsSection from "@/components/home/SolutionsSection";
+// import ProjectsSection from "@/components/home/ProjectsSection";
+// import ChantiersSection from "@/components/home/ChantiersSection";
+// import TestimonialsSection from "@/components/home/TestimonialsSection";
+// import StatsSection from "@/components/home/StatsSection";
+// import ContactSection from "@/components/home/ContactSection";
+// import HomeSolutionsSection from "@/components/home/HomeSolutionsSection";
 
 // export default function Home() {
 //   return (
-//     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-//       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-//         <h1 className="text-5xl font-bold text-black dark:text-white sm:text-6xl">
-//           Welcome to{" "}
-//           <a
-//             className="text-blue-600 dark:text-blue-400"
-//             href="https://berem.onrender.com/"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             BEREM WEB SITE
-//           </a>
-//         </h1>
+//     <>
+//       <Hero />
 
-//       </main>
-//     </div>
+//       <ServicesSection />
+
+//       <ProjectsSection />
+
+//       <ChantiersSection />
+
+//       <HomeSolutionsSection/>
+//       <TestimonialsSection />
+
+//       <SolutionsSection />
+
+//       {/* <StatsSection /> */}
+
+//       {/* <ContactSection /> */}
+//     </>
 //   );
 // }

@@ -3,11 +3,14 @@ import Link from "next/link";
 import { ArrowUpRight, Layers3 } from "lucide-react";
 
 import { prisma } from "@/lib/prisma";
+import { connection } from "next/server";
 
 const MAX_SOLUTIONS = 3;
 
 export default async function HomeSolutionsSection() {
+  await connection();
   const solutions = await prisma.solution.findMany({
+
     where: { status: "PUBLISHED" },
     orderBy: [
       { isFeatured: "desc" },

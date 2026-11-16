@@ -4,12 +4,15 @@ import {
   deleteTestimonial,
   toggleTestimonialPublication,
 } from "./actions";
+import { connection } from "next/server";
 
 export const metadata = {
   title: "Témoignages | BEREM Admin",
 };
 
 export default async function TestimonialsAdminPage() {
+  await connection();
+
   const testimonials = await prisma.testimonial.findMany({
     orderBy: [{ createdAt: "desc" }],
   });

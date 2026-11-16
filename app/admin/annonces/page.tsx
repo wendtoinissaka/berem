@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import {
@@ -40,7 +42,17 @@ function isCurrentlyActive(
   );
 }
 
-export default async function AnnouncementsPage() {
+export default function AnnouncementsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[400px]" />}>
+      <AnnouncementsContent />
+    </Suspense>
+  );
+}
+
+async function AnnouncementsContent() {
+  await connection();
+
   const announcements = await prisma.announcement.findMany({
     orderBy: [
       { priority: "desc" },

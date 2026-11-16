@@ -70,6 +70,12 @@ COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Prisma Client généré
+COPY --from=build --chown=nextjs:nodejs /app/generated ./generated
+
+# Adaptateur MariaDB et dépendances nécessaires
+COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
+
 USER nextjs
 
 EXPOSE 3000

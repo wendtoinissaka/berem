@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
 import {
   createStatistic,
   updateStatistic,
@@ -36,7 +38,17 @@ function SourceOptions() {
   );
 }
 
-export default async function StatisticsAdminPage() {
+export default function StatisticsAdminPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[400px]" />}>
+      <StatisticsContent />
+    </Suspense>
+  );
+}
+
+async function StatisticsContent() {
+  await connection();
+
   const statistics = await prisma.homeStatistic.findMany({
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });

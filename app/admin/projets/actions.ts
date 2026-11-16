@@ -60,7 +60,11 @@ function readProjectForm(formData: FormData) {
     throw new Error("La progression doit être comprise entre 0 et 100.");
   }
 
-  if (startDate && expectedEndDate && expectedEndDate < startDate) {
+  if (
+    startDate &&
+    expectedEndDate &&
+    expectedEndDate.getTime() <= startDate.getTime()
+  ) {
     throw new Error(
       "La date de fin prévue doit être postérieure à la date de début."
     );

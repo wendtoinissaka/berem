@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import ProjectForm from "@/components/admin/projets/project-form";
 import ProjectMediaUpload from "@/components/admin/projets/project-media-upload";
 import ProjectMediaManager from "@/components/admin/projets/project-media-manager";
+import { connection } from "next/server";
 
 export const metadata = {
   title: "Modifier un chantier | BEREM Admin",
@@ -14,6 +15,8 @@ export default async function EditProjectPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
+
   const { id } = await params;
 
   const project = await prisma.project.findUnique({

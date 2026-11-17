@@ -92,14 +92,7 @@ function readSolutionForm(formData: FormData) {
     }
   }
 
-  const status = statusValue as SolutionStatus;
-
-  if (status === SolutionStatus.PUBLISHED && !coverImageUrl) {
-    throw new Error(
-      "Ajoutez une image de couverture avant de publier cette solution."
-    );
-  }
-
+const status = statusValue as SolutionStatus;
   const features = formData
     .getAll("featureTitle")
     .map((value) => String(value).trim())
@@ -170,12 +163,30 @@ export async function createSolution(formData: FormData) {
         id: true,
         slug: true,
         publishedAt: true,
+        logoUrl: true,
+        coverImageUrl: true,
       },
     });
 
     if (!existing) {
       throw new Error("La solution à enregistrer est introuvable.");
     }
+
+    // Conserver les images déjà enregistrées si les champs
+// cachés du formulaire sont vides.
+const finalLogoUrl = data.logoUrl || existing.logoUrl;
+const finalCoverImageUrl =
+  data.coverImageUrl || existing.coverImageUrl;
+
+// Une solution publiée doit obligatoirement avoir une couverture.
+if (
+  data.status === SolutionStatus.PUBLISHED &&
+  !finalCoverImageUrl
+) {
+  throw new Error(
+    "Ajoutez une image de couverture avant de publier cette solution."
+  );
+}
 
     const slug = await uniqueSlug(data.slug, existingId);
 
@@ -190,8 +201,8 @@ export async function createSolution(formData: FormData) {
           slug,
           summary: data.summary,
           description: data.description,
-          logoUrl: data.logoUrl,
-          coverImageUrl: data.coverImageUrl,
+          logoUrl: finalLogoUrl,
+          coverImageUrl: finalCoverImageUrl,
           websiteUrl: data.websiteUrl,
           actionLabel: data.actionLabel,
           status: data.status,
@@ -251,12 +262,18 @@ export async function updateSolution(formData: FormData) {
     throw new Error("Identifiant de la solution manquant.");
   }
 
+  // Lire les données du formulaire.
+  const data = readSolutionForm(formData);
+
+  // Récupérer également les images déjà enregistrées.
   const existing = await prisma.solution.findUnique({
     where: { id },
     select: {
       id: true,
       slug: true,
       publishedAt: true,
+      logoUrl: true,
+      coverImageUrl: true,
     },
   });
 
@@ -264,7 +281,21 @@ export async function updateSolution(formData: FormData) {
     throw new Error("Cette solution n'existe pas.");
   }
 
-  const data = readSolutionForm(formData);
+  // Préserver les images existantes si les champs
+  // du formulaire sont vides.
+  const finalLogoUrl = data.logoUrl || existing.logoUrl;
+  const finalCoverImageUrl =
+    data.coverImageUrl || existing.coverImageUrl;
+
+  // Vérifier la couverture avant publication.
+  if (
+    data.status === SolutionStatus.PUBLISHED &&
+    !finalCoverImageUrl
+  ) {
+    throw new Error(
+      "Ajoutez une image de couverture avant de publier cette solution."
+    );
+  }
 
   const slug =
     data.slug === normalizeSlug(existing.slug)
@@ -282,8 +313,8 @@ export async function updateSolution(formData: FormData) {
         slug,
         summary: data.summary,
         description: data.description,
-        logoUrl: data.logoUrl,
-        coverImageUrl: data.coverImageUrl,
+        logoUrl: finalLogoUrl,
+        coverImageUrl: finalCoverImageUrl,
         websiteUrl: data.websiteUrl,
         actionLabel: data.actionLabel,
         status: data.status,

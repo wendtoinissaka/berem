@@ -7,6 +7,7 @@ import {
   restoreProject,
   toggleProjectPublication,
 } from "./actions";
+import { connection } from "next/server";
 
 export const instant = false;
 
@@ -29,7 +30,10 @@ const statusStyles: Record<ProjectStatus, string> = {
 };
 
 export default async function AdminProjectsPage() {
+  await connection();
+
   const [projects, total, published, ongoing, archived] = await Promise.all([
+
     prisma.project.findMany({
       where: { archivedAt: null },
       orderBy: { updatedAt: "desc" },

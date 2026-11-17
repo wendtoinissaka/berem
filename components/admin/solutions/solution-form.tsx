@@ -60,6 +60,18 @@ export default function SolutionForm({ initialData }: Props) {
   const isEditing = Boolean(initialData?.id);
 
   const [solutionId, setSolutionId] = useState(initialData?.id ?? "");
+  // Nombre de composants qui effectuent actuellement un envoi.
+const [activeUploads, setActiveUploads] = useState(0);
+
+const isUploading = activeUploads > 0;
+
+function handleUploadStart() {
+  setActiveUploads((current) => current + 1);
+}
+
+function handleUploadEnd() {
+  setActiveUploads((current) => Math.max(0, current - 1));
+}
   const [features, setFeatures] = useState<Feature[]>(
     initialData?.features?.length
       ? initialData.features
@@ -160,7 +172,15 @@ async function confirmMediaDeletion() {
   }
 
   return (
-<form action={handleSubmit} className="space-y-8">
+<form
+  action={handleSubmit}
+  onSubmit={(event) => {
+    if (isUploading) {
+      event.preventDefault();
+    }
+  }}
+  className="space-y-8"
+>
   <input type="hidden" name="id" value={solutionId} />
 
   <input type="hidden" name="logoUrl" value={logoUrl} />
@@ -325,21 +345,25 @@ async function confirmMediaDeletion() {
   </div>
 
   <div className="grid gap-6 lg:grid-cols-2">
-    <SolutionBrandImageUpload
-      kind="logo"
-      solutionId={solutionId || undefined}
-      initialUrl={logoUrl}
-      onSolutionReady={setSolutionId}
-      onUrlChange={setLogoUrl}
-    />
+  <SolutionBrandImageUpload
+    kind="logo"
+    solutionId={solutionId || undefined}
+    initialUrl={logoUrl}
+    onSolutionReady={setSolutionId}
+    onUrlChange={setLogoUrl}
+    onUploadStart={handleUploadStart}
+    onUploadEnd={handleUploadEnd}
+  />
 
-    <SolutionBrandImageUpload
-      kind="couverture"
-      solutionId={solutionId || undefined}
-      initialUrl={coverImageUrl}
-      onSolutionReady={setSolutionId}
-      onUrlChange={setCoverImageUrl}
-    />
+  <SolutionBrandImageUpload
+    kind="couverture"
+    solutionId={solutionId || undefined}
+    initialUrl={coverImageUrl}
+    onSolutionReady={setSolutionId}
+    onUrlChange={setCoverImageUrl}
+    onUploadStart={handleUploadStart}
+    onUploadEnd={handleUploadEnd}
+  />
   </div>
 </section>
 
@@ -456,6 +480,8 @@ async function confirmMediaDeletion() {
   onMediaUploaded={(newMedia) => {
     setMedia((current) => [...current, ...newMedia]);
   }}
+  onUploadStart={handleUploadStart}
+  onUploadEnd={handleUploadEnd}
 />
   </div>
 
@@ -560,6 +586,19 @@ async function confirmMediaDeletion() {
         </label>
       </section>
 
+      {isUploading && (
+          <div
+            role="status"
+            className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"
+          >
+            <Loader2 size={20} className="shrink-0 animate-spin" />
+
+            <p>
+              Un ou plusieurs fichiers sont en cours d'envoi.
+              Tu pourras enregistrer la solution dès que tous les envois seront terminés.
+            </p>
+          </div>
+        )}
       <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
         <Link
           href="/admin/solutions"
@@ -570,11 +609,22 @@ async function confirmMediaDeletion() {
 
         <button
           type="submit"
-          className="rounded-xl bg-[#102A43] px-6 py-3 font-bold text-white transition hover:bg-[#183d5d]"
+          disabled={isUploading}
+          className="rounded-xl bg-[#102A43] px-6 py-3 font-bold text-white transition hover:bg-[#183d5d] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isEditing ? "Enregistrer les modifications" : "Enregistrer la solution"}
+          {isUploading ? (
+            <span className="inline-flex items-center gap-2">
+              <Loader2 size={17} className="animate-spin" />
+              Envoi des fichiers en cours...
+            </span>
+          ) : isEditing ? (
+            "Enregistrer les modifications"
+          ) : (
+            "Enregistrer la solution"
+          )}
         </button>
       </div>
+
       {mediaToDelete && (
   <div
     className="fixed inset-0 z-[100] flex items-center justify-center bg-[#10161F]/70 p-4 backdrop-blur-sm"

@@ -16,6 +16,8 @@ type Props = {
   initialUrl?: string | null;
   onSolutionReady: (id: string) => void;
   onUrlChange: (url: string) => void;
+  onUploadStart?: () => void;
+  onUploadEnd?: () => void;
 };
 
 export default function SolutionBrandImageUpload({
@@ -24,6 +26,8 @@ export default function SolutionBrandImageUpload({
   initialUrl,
   onSolutionReady,
   onUrlChange,
+  onUploadStart,
+  onUploadEnd,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -50,6 +54,8 @@ export default function SolutionBrandImageUpload({
       setMessage("L'image ne doit pas dépasser 10 Mo.");
       return;
     }
+
+    onUploadStart?.();
 
     setUploading(true);
     setMessage("");
@@ -116,9 +122,10 @@ export default function SolutionBrandImageUpload({
           ? error.message
           : "Une erreur est survenue pendant l'envoi."
       );
-    } finally {
-      setUploading(false);
-    }
+} finally {
+  setUploading(false);
+  onUploadEnd?.();
+}
   }
 
   return (

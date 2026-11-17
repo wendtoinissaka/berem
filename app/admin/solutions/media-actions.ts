@@ -250,7 +250,6 @@ export async function createSolutionMediaUploadSignature(
  */
 export async function saveUploadedSolutionMedia(formData: FormData) {
   await requireAdmin();
-  const cloudinary = getCloudinary();
 
   const solutionId = readText(formData, "solutionId");
   const url = readText(formData, "url");
@@ -300,14 +299,19 @@ export async function saveUploadedSolutionMedia(formData: FormData) {
       caption: caption || null,
       sortOrder: (lastMedia?.sortOrder ?? -1) + 1,
     },
-    select: { id: true },
+    select: {
+      id: true,
+      url: true,
+      publicId: true,
+      type: true,
+      caption: true,
+    },
   });
 
   refreshSolutionPages(solution.slug);
 
-  return { mediaId: media.id };
+  return { media };
 }
-
 /**
  * Supprime un média de galerie.
  * La vérification de l'appartenance empêche de supprimer

@@ -20,11 +20,27 @@ function normalizeSlug(value: string) {
 }
 
 function readDate(value: FormDataEntryValue | null): Date | null {
-  if (typeof value !== "string" || !value.trim()) return null;
+  if (typeof value !== "string" || !value.trim()) {
+    return null;
+  }
 
-  const date = new Date(`${value}T12:00:00`);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (!match) {
+    throw new Error("Format de date invalide.");
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
     throw new Error("Une date saisie est invalide.");
   }
 
@@ -38,9 +54,24 @@ function readProjectForm(formData: FormData) {
   const status = String(formData.get("status") ?? "PLANNED");
   const type = String(formData.get("type") ?? "OTHER");
   const progress = Number(formData.get("progress") ?? 0);
-  const startDate = readDate(formData.get("startDate"));
-  const expectedEndDate = readDate(formData.get("expectedEndDate"));
-  const isPublished = formData.get("isPublished") === "on";
+const startDateRaw = formData.get("startDate");
+const expectedEndDateRaw = formData.get("expectedEndDate");
+
+const startDate = readDate(startDateRaw);
+const expectedEndDate = readDate(expectedEndDateRaw);
+
+console.error("[DEBUG PROJET - DATES]", {
+  startDateRaw,
+  expectedEndDateRaw,
+  startDateISO: startDate?.toISOString() ?? null,
+  expectedEndDateISO: expectedEndDate?.toISOString() ?? null,
+  comparaison:
+    startDate && expectedEndDate
+      ? expectedEndDate.getTime() - startDate.getTime()
+      : null,
+});
+
+const isPublished = formData.get("isPublished") === "on";
 
   if (!title || !description || !location) {
     throw new Error(
@@ -60,15 +91,22 @@ function readProjectForm(formData: FormData) {
     throw new Error("La progression doit être comprise entre 0 et 100.");
   }
 
-  if (
-    startDate &&
-    expectedEndDate &&
-    expectedEndDate.getTime() <= startDate.getTime()
-  ) {
-    throw new Error(
-      "La date de fin prévue doit être postérieure à la date de début."
-    );
-  }
+  // Les deux dates sont obligatoires
+if (!startDate || !expectedEndDate) {
+  throw new Error(
+    "La date de début et la date de fin prévue sont obligatoires."
+  );
+}
+
+// La date de fin doit être strictement postérieure à la date de début
+if (expectedEndDate.getTime() <= startDate.getTime()) {
+  throw new Error(
+    "La date de fin prévue doit être postérieure à la date de début."
+  );
+}
+
+
+
 
   return {
     title,

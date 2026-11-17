@@ -5,6 +5,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { prisma } from "@/lib/prisma";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
+import FloatingActions from "@/components/layout/FloatingActions";
+
 
 export default function PublicLayout({
   children,
@@ -13,15 +15,23 @@ export default function PublicLayout({
 }>) {
   return (
     <>
+      {/* FLASH INFO */}
+      <AnnouncementBar />
+
+      {/* NAVIGATION */}
       <Suspense fallback={<div className="h-20 bg-white" />}>
         <PublicNavbar />
       </Suspense>
 
-      <AnnouncementBar />
-
+      {/* CONTENU */}
       <main className="flex-1">{children}</main>
 
+      {/* ACTIONS FLOTTANTES */}
+      <FloatingActions />
+
+      {/* PIED DE PAGE */}
       <Footer />
+
     </>
   );
 }
@@ -47,6 +57,7 @@ async function PublicNavbar() {
 
   return <Navbar solutions={solutions} />;
 }
+
 
 
 // import { connection } from "next/server";

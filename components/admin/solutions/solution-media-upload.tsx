@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   createSolutionMediaUploadSignature,
   ensureSolutionDraft,
   saveUploadedSolutionMedia,
 } from "@/app/admin/solutions/media-actions";
+
 
 type SolutionMedia = {
   id: string;
@@ -19,6 +20,8 @@ type Props = {
   initialSolutionId?: string;
   onSolutionReady?: (id: string) => void;
   onMediaUploaded?: (media: SolutionMedia[]) => void;
+  onUploadStart?: () => void;
+  onUploadEnd?: () => void;
 };
 
 type UploadResult = {
@@ -37,11 +40,20 @@ export default function SolutionMediaUpload({
   initialSolutionId,
   onSolutionReady,
   onMediaUploaded,
+  onUploadStart,
+  onUploadEnd,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [solutionId, setSolutionId] = useState(initialSolutionId ?? "");
-  const [previews, setPreviews] = useState<PreviewFile[]>([]);
+const [solutionId, setSolutionId] = useState(initialSolutionId ?? "");
+
+useEffect(() => {
+  if (initialSolutionId) {
+    setSolutionId(initialSolutionId);
+  }
+}, [initialSolutionId]);
+
+const [previews, setPreviews] = useState<PreviewFile[]>([]);
   const [caption, setCaption] = useState("");
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -101,6 +113,8 @@ export default function SolutionMediaUpload({
         return;
       }
     }
+
+    onUploadStart?.();
 
     setLoading(true);
     setMessage("Préparation de l'envoi...");
@@ -183,10 +197,16 @@ export default function SolutionMediaUpload({
         saveForm.set("resourceType", uploaded.resource_type);
         saveForm.set("caption", caption.trim());
 
-        await saveUploadedSolutionMedia(saveForm);
+        const saved = await saveUploadedSolutionMedia(saveForm);
+
+        // Transmettre le média enregistré au formulaire parent.
+        onMediaUploaded?.([saved.media]);
 
         uploadedCount++;
-        setProgress(Math.round((uploadedCount / previews.length) * 100));
+
+        setProgress(
+          Math.round((uploadedCount / previews.length) * 100),
+        );
       }
 
       setMessage(
@@ -211,9 +231,10 @@ export default function SolutionMediaUpload({
           : "Une erreur est survenue pendant l'envoi.",
       );
       setSuccess(false);
-    } finally {
-      setLoading(false);
-    }
+} finally {
+  setLoading(false);
+  onUploadEnd?.();
+}
   }
 
   return (

@@ -54,14 +54,36 @@ function getFormData(formData: FormData) {
   };
 }
 
+function validateAnnouncementDates(
+  startsAt: Date | null,
+  endsAt: Date | null,
+) {
+  if (startsAt && Number.isNaN(startsAt.getTime())) {
+    throw new Error("La date de début est invalide.");
+  }
+
+  if (endsAt && Number.isNaN(endsAt.getTime())) {
+    throw new Error("La date de fin est invalide.");
+  }
+
+  if (startsAt && endsAt && endsAt.getTime() <= startsAt.getTime()) {
+    console.error("[Annonce] Dates incohérentes :", {
+      startsAt: startsAt.toISOString(),
+      endsAt: endsAt.toISOString(),
+    });
+
+    throw new Error(
+      "La date de fin doit être strictement postérieure à la date de début.",
+    );
+  }
+}
+
 export async function createAnnouncement(formData: FormData) {
   await requireAdmin();
 
   const data = getFormData(formData);
 
-  if (data.startsAt && data.endsAt && data.endsAt < data.startsAt) {
-    throw new Error("La date de fin doit être postérieure à la date de début.");
-  }
+  validateAnnouncementDates(data.startsAt, data.endsAt);
 
   await prisma.announcement.create({ data });
 
@@ -82,9 +104,7 @@ export async function updateAnnouncement(formData: FormData) {
 
   const data = getFormData(formData);
 
-  if (data.startsAt && data.endsAt && data.endsAt < data.startsAt) {
-    throw new Error("La date de fin doit être postérieure à la date de début.");
-  }
+  validateAnnouncementDates(data.startsAt, data.endsAt);
 
   await prisma.announcement.update({
     where: { id },

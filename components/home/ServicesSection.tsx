@@ -15,7 +15,7 @@ import {
 
 const services = [
   {
-    number: "01",
+    // number: "01",
     title: "Génie civil",
     description:
       "Des solutions d’ingénierie adaptées à vos ouvrages, aux contraintes du terrain et aux exigences de votre projet.",
@@ -23,34 +23,34 @@ const services = [
     icon: DraftingCompass,
   },
   {
-    number: "02",
+    // number: "02",
     title: "Construction",
     description:
-      "Des solutions d’ingénierie adaptées à vos ouvrages, aux contraintes du terrain et aux exigences de votre projet.",
+      "Réalisation de bâtiments résidentiels et professionnels, du gros œuvre aux finitions, avec une attention particulière portée à la qualité, à la sécurité et au respect des délais.",
     detail: "Bâtiment & ouvrages",
     icon: Building2,
   },
   {
-    number: "03",
+    // number: "03",
     title: "Études techniques",
     description:
-      "Faisabilité, dimensionnement et plans d’exécution : nous préparons les bases techniques de votre projet pour guider sa réalisation.",
+      "Réalisation d'études de faisabilité, conception de plans techniques et dimensionnement des ouvrages pour garantir la fiabilité et la conformité de chaque projet.",
     detail: "Analyse & conception",
     icon: Ruler,
   },
     {
-    number: "04",
+    // number: "04",
     title: "Rénovation, si proposée comme service distinct",
     description:
-      "Nous réhabilitons et transformons vos bâtiments pour améliorer leur confort, leur fonctionnalité et leur durabilité.",
+      "Réhabilitation, modernisation et valorisation de bâtiments existants afin d'améliorer leur confort, leur fonctionnalité et leur durabilité.",
     detail: "Analyse & conception",
     icon: Ruler,
   },
     {
-    number: "05",
+    // number: "05",
     title: "Suivi de chantier",
     description:
-      "Un accompagnement sur le terrain et des comptes rendus pour vous aider à suivre l’exécution et l’évolution de vos travaux.",
+      "Supervision et contrôle rigoureux des travaux, suivi à distance de l'avancement à et production de comptes rendus réguliers pour assurer la qualité et la bonne exécution des projets.",
     detail: "Analyse & conception",
     icon: Ruler,
   },
@@ -343,7 +343,7 @@ export default function ServicesSection() {
 
               return (
                 <article
-                  key={service.number}
+                  // key={service.number}
                   data-service-card
                   className="group relative flex min-h-[250px] w-[88%] shrink-0 snap-start flex-col overflow-hidden rounded-sm border border-[#EAE1D7] bg-white p-5 transition-all duration-500 hover:border-[#D59344]/60 hover:shadow-[0_20px_50px_rgba(16,22,31,0.08)] sm:min-h-[260px] sm:w-[calc((100%-20px)/2)] sm:p-6 lg:w-[calc((100%-40px)/3)]"
                 >
@@ -352,7 +352,7 @@ export default function ServicesSection() {
                     aria-hidden="true"
                     className="pointer-events-none absolute -right-2 -top-4 text-[85px] font-black leading-none tracking-tighter text-[#10161F]/[0.035] transition-all duration-500 group-hover:-translate-y-1 group-hover:text-[#D59344]/[0.09]"
                   >
-                    {service.number}
+                    {/* {service.number} */}
                   </span>
 
                   {/* CATÉGORIE */}
@@ -385,7 +385,7 @@ export default function ServicesSection() {
                   {/* FOOTER */}
                   <div className="relative mt-5 flex items-center justify-between border-t border-[#EAE1D7] pt-3">
                     <span className="text-[11px] font-semibold tracking-wide text-[#647084]">
-                      Service {service.number}
+                      {/* Service {service.number} */}
                     </span>
 
                     <Link

@@ -1371,3 +1371,71 @@ a {
     will-change: auto;
   }
 }
+
+
+/* =========================================
+   PAGES INSTITUTIONNELLES - BEREM
+========================================= */
+
+.legal-content {
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.legal-section + .legal-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(23, 32, 51, 0.08);
+}
+
+.legal-content h2 {
+  margin-bottom: 1rem;
+  color: #10161f;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.legal-content p + p {
+  margin-top: 1rem;
+}
+
+.legal-content ul {
+  margin-top: 1rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.legal-content li {
+  padding-left: 0.25rem;
+  margin-top: 0.55rem;
+}
+
+.legal-content strong {
+  color: #172033;
+  font-weight: 700;
+}
+
+.legal-content a {
+  color: #a66c2b;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal-content a:hover {
+  color: #10161f;
+}
+
+@media (max-width: 640px) {
+  .legal-content {
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  .legal-section + .legal-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+  }
+}

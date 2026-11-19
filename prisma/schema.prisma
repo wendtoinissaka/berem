@@ -203,7 +203,8 @@ model Solution {
   id          String @id @default(cuid())
   name        String
   slug        String @unique
-  summary     String
+
+  summary     String @db.VarChar(500)
   description String @db.Text
 
   logoUrl       String?

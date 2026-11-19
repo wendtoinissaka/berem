@@ -54,9 +54,9 @@ const YoutubeIcon = () => (
 
 const navigation = [
   { label: "Accueil", href: "/" },
-  { label: "L'entreprise", href: "/entreprise" },
-  { label: "Nos services", href: "/services" },
-  { label: "Nos solutions", href: "/solutions" },
+  { label: "Qui sommes-nous ?", href: "/entreprise" },
+  { label: "Services", href: "/services" },
+  { label: "Solutions", href: "/solutions" },
   { label: "Nos réalisations", href: "/realisations" },
   { label: "Chantiers en cours", href: "/chantiers" },
 ];
@@ -71,7 +71,7 @@ const domains = [
 const contact = {
   phone: "+226 61 91 00 41",
   whatsapp: "+22661910041",
-  email: "beremingenierie@gmail.com",
+  email: "contact@berem.bf",
   address: "Secteur 51, Ouagadougou, Burkina Faso",
 };
 
@@ -86,11 +86,11 @@ const socialLinks = [
     href: "https://www.instagram.com/beremmzaka/",
     icon: InstagramIcon,
   },
-  {
-    label: "LinkedIn",
-    href: "https://linkedin.com/in/berem",
-    icon: LinkedinIcon,
-  },
+  // {
+  //   label: "LinkedIn",
+  //   href: "https://linkedin.com/in/berem",
+  //   icon: LinkedinIcon,
+  // },
   {
     label: "YouTube",
     href: "https://m.youtube.com/@beremmzaka4471", // Ajouter ici l'adresse officielle de la chaîne YouTube
@@ -101,7 +101,7 @@ const socialLinks = [
 const platforms = [
   {
     label: "MZAKA",
-    href: "https://site-mzaka.duckdns.org",
+    href: "https://mzaka.berem.bf",
   },
 ];
 
@@ -330,6 +330,8 @@ export default function Footer() {
           </div>
         </div>
 
+
+
         {/* BARRE INFÉRIEURE */}
         <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 sm:mt-14 sm:flex-row sm:items-center sm:justify-between">
 
@@ -338,9 +340,9 @@ export default function Footer() {
           </p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-            <Link
+            {/* <Link
               href="#"
-              // href="/mentions-legales"
+              href="/mentions-legales"
               className="text-xs text-white/45 transition-colors hover:text-[#D59344]"
             >
               Mentions légales
@@ -348,7 +350,21 @@ export default function Footer() {
 
             <Link
               href="#"
-              // href="/politique-confidentialite"
+              href="/politique-confidentialite"
+              className="text-xs text-white/45 transition-colors hover:text-[#D59344]"
+            >
+              Confidentialité
+            </Link> */}
+
+            <Link
+              href="/mentions-legales"
+              className="text-xs text-white/45 transition-colors hover:text-[#D59344]"
+            >
+              Mentions légales
+            </Link>
+
+            <Link
+              href="/politique-confidentialite"
               className="text-xs text-white/45 transition-colors hover:text-[#D59344]"
             >
               Confidentialité

@@ -130,9 +130,7 @@ export default function Hero() {
             <span className="mt-1 hidden h-[66px] w-[2px] shrink-0 bg-[#D59344] sm:block" />
 
             <p className="max-w-xl text-sm leading-7 text-white/75  text-justify sm:text-base sm:leading-8 lg:text-lg">
-Votre projet au Burkina Faso, suivi où que vous soyez.
-Études, construction, rénovation : BEREM vous accompagne sur le terrain et vous permet de
-suivre l’avancement de vos travaux à distance grâce à MZAKA.
+                BEREM vous accompagne dans vos projets de construction et de génie civil au Burkina Faso, de l'étude à la réalisation. Suivez également l'évolution de vos travaux à distance grâce à MZAKA.
             </p>
           </div>
           

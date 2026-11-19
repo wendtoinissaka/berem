@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import { prisma } from "@/lib/prisma";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import FloatingActions from "@/components/layout/FloatingActions";
+import LocationMapSection from "@/components/layout/LocationMapSection";
 
 
 export default function PublicLayout({
@@ -26,6 +27,8 @@ export default function PublicLayout({
       {/* CONTENU */}
       <main className="flex-1">{children}</main>
 
+      <LocationMapSection />
+      
       {/* ACTIONS FLOTTANTES */}
       <FloatingActions />
 

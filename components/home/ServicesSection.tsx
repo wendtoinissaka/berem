@@ -40,7 +40,7 @@ const services = [
   },
     {
     // number: "04",
-    title: "Rénovation, si proposée comme service distinct",
+    title: "Rénovation",
     description:
       "Réhabilitation, modernisation et valorisation de bâtiments existants afin d'améliorer leur confort, leur fonctionnalité et leur durabilité.",
     detail: "Analyse & conception",
@@ -50,7 +50,7 @@ const services = [
     // number: "05",
     title: "Suivi de chantier",
     description:
-      "Supervision et contrôle rigoureux des travaux, suivi à distance de l'avancement à et production de comptes rendus réguliers pour assurer la qualité et la bonne exécution des projets.",
+      "Supervision et contrôle des travaux, suivi à distance de leur avancement et production de comptes rendus réguliers pour garantir la qualité et la bonne exécution des projets.",
     detail: "Analyse & conception",
     icon: Ruler,
   },

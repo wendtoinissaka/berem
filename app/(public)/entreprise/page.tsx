@@ -63,6 +63,14 @@ const expertise = [
       "Proposer des opportunités immobilières aux particuliers et investisseurs à la recherche de biens adaptés à leurs besoins.",
     icon: House,
   },
+    {
+    number: "06",
+    title: "Rénovation et réhabilitation de bâtiments",
+    description:
+      "Modernisation, réhabilitation et amélioration de bâtiments résidentiels et professionnels, afin d’optimiser leur confort, leur fonctionnalité, leur sécurité et leur durabilité",
+    icon: House,
+  },
+  
 ];
 
 const values = [
